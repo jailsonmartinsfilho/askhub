@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from '../styles/login.module.css';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { useRouter } from 'next/router';
+
 
 export default function Login() {
+    const router = useRouter();
     const [emailusuario, setEmailUsuario] = useState('');
     const [senhausuario, setSenhaUsuario] = useState('');
     const [mensagemErro, setMensagemErro] = useState('');
+    const [recaptchaToken, setRecaptchaToken] = useState(null);
+
+    const validarFormulario = ({ recaptchaToken }) => {
+        if (!recaptchaToken) return setMensagemErro('Complete a verificação ReCaptcha!');
+        setMensagemErro('')
+        return '';
+    };
+
+    useEffect(() => {
+        validarFormulario({recaptchaToken}); 
+      }, [recaptchaToken]);
     
     const logar = async (event) => {
-        setMensagemErro('')
-
         await axios.post('http://localhost:8080/login', {emailusuario, senhausuario})
         .then(response =>{
             if (response.data == 'O endereço informado não está vinculado a uma conta!' || response.data == 'A senha informada está incorreta!') return setMensagemErro(response.data);
+            if (response.data == 'A senha informada está correta!') return router.push('/profile');
         });
     }
 
@@ -32,9 +46,9 @@ export default function Login() {
                             <input value={senhausuario} onChange={(event) => setSenhaUsuario(event.target.value)} className={styles.input}type="password" id="password" name="password" placeholder='Senha' minLength={8} maxLength={100} pattern="[A-Za-z0-9]+"/>
                         </div>
 
+                        <ReCAPTCHA onChange={(token) => {setRecaptchaToken(token)}} className={styles.recaptcha} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}/>
                         <div className={styles.mensagemErro}>{mensagemErro}</div>
-
-                        <button onClick={logar} className={styles.buttonCadastrar}>Entrar</button>
+                        <button onClick={logar} className={recaptchaToken ? styles.buttonCadastrar : styles.buttonCadastrarOff}>Entrar</button>
                     </div>
                 </div>
             </section>
