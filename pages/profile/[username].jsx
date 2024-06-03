@@ -1,48 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from '../styles/profile.module.css';
+import styles from '../../styles/profile.module.css';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
+import calcularTempo from '../../hooks/calcularTempo';
+import calcularPontos from '../../hooks/calcularPontos';
 
 import { FaMedal } from "react-icons/fa";
 import { GrConfigure } from "react-icons/gr";
+import { FaHammer } from "react-icons/fa";
 
-import PerguntaPerfil from '../components/PerguntaPerfil/PerguntaPerfil';
+import PerguntaPerfil from '../../components/PerguntaPerfil/PerguntaPerfil';
 
 export default function Profile() {
     const router = useRouter();
 
+    const [nomeUsuario, setNomeUsuario] = useState('');
+    const [biografiaUsuario, setBiografiaUsuario] = useState('');
+    const [dataCadastro, setDataCadastro] = useState('');
+    const [pontosTotalUsuario, setPontosTotalUsuario] = useState(0);
+    const [pontosProximoNivel, setPontosProximoNivel] = useState(0);
+
     useEffect(() => {
         const verificarToken = async () => {
             const token = Cookies.get('askhub');
-            if (token) return router.push('/');
+            if (!token) return router.push('/login');
+
+            const username = window.location.pathname.split('/')[2];
+            await axios.post('http://localhost:8080/buscarDadosPerfil', {username})
+            .then(response =>{
+                setPontosProximoNivel(calcularPontos(response.data.nivelusuario))
+                setNomeUsuario(response.data.nomeusuario);
+                setDataCadastro(new Date(response.data.datacadastrousuario).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }));
+                setBiografiaUsuario(response.data.biografiausuario);
+                setPontosTotalUsuario(response.data.pontostotalusuario);
+            });
         };
         verificarToken();
     }, []);
 
-    const [emailusuario, setEmailUsuario] = useState('');
-    const [senhausuario, setSenhaUsuario] = useState('');
-    const [mensagemErro, setMensagemErro] = useState('');
-    const [recaptchaToken, setRecaptchaToken] = useState(null);
     const [guiaAtivaNome, setGuiaAtivaNome] = useState('Perguntas');
-
-    const validarFormulario = ({ recaptchaToken }) => {
-        if (!recaptchaToken) return setMensagemErro('Complete a verificação ReCaptcha!');
-        setMensagemErro('')
-        return '';
-    };
-
-    useEffect(() => {
-        validarFormulario({ recaptchaToken });
-    }, [recaptchaToken]);
-
-    const logar = async (event) => {
-        await axios.post('http://localhost:8080/login', { emailusuario, senhausuario })
-            .then(response => {
-                if (response.data == 'O endereço informado não está vinculado a uma conta!' || response.data == 'A senha informada está incorreta!') return setMensagemErro(response.data);
-                if (response.data == 'A senha informada está correta!') return router.push('/profile');
-            });
-    }
 
     return (
         <section className={styles.mainContainer}>
@@ -53,11 +50,14 @@ export default function Profile() {
                 </div>
 
                 <div className={styles.containerInformacoes}>
-                    <p className={styles.textoNome}>Nome</p>
-                    <p className={styles.textoPronome}>Ele/dele</p>
-                    <FaMedal className={styles.medalha} />
-                    <FaMedal className={styles.medalha} />
-                    <GrConfigure className={styles.medalha} />
+                    <p className={styles.textoNome}>{nomeUsuario}</p>
+      
+
+                    <div className={styles.containerMedalha}>
+                        <FaHammer  className={styles.medalha} />
+                        <p>Desenvolvedor</p>
+                    </div>
+
                 </div>
 
                 <div className={styles.containerInformacoes2}>
@@ -65,14 +65,17 @@ export default function Profile() {
                         <div className={styles.barraExperiencia}></div>
 
                     </div>
-                    <p className={styles.textoExperiencia}>0/100 | 0%</p>
+                    <p className={styles.textoExperiencia}>{pontosTotalUsuario}/{pontosProximoNivel} | 0%</p>
                 </div>
-
-
 
                 <div className={styles.containerBiografia}>
-                    <p className={styles.textoBiografia}>the cocaine is not good for u</p>
+                    <p className={styles.textoBiografia}>{biografiaUsuario}</p>
                 </div>
+
+                <div className={styles.containerBiografia}>
+                    <p className={styles.textoBiografia}>Membro desde {dataCadastro}</p>
+                </div>
+
 
                 <div className={styles.linhaHorizontal}></div>
 

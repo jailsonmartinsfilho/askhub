@@ -11,7 +11,7 @@ export default function Cadastro() {
     useEffect(() => {
         const verificarToken = async () => {
             const token = Cookies.get('askhub');
-            if (token) return router.push('/');
+            if (!token) return router.push('/login');
         };
         verificarToken();
     }, []);
