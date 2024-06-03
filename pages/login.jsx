@@ -3,10 +3,19 @@ import axios from 'axios';
 import styles from '../styles/login.module.css';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useRouter } from 'next/router';
-
+import Cookies from 'js-cookie';
 
 export default function Login() {
     const router = useRouter();
+
+    useEffect(() => {
+        const verificarToken = async () => {
+            const token = Cookies.get('askhub');
+            if (token) return router.push('/');
+        };
+        verificarToken();
+    }, []);
+
     const [emailusuario, setEmailUsuario] = useState('');
     const [senhausuario, setSenhaUsuario] = useState('');
     const [mensagemErro, setMensagemErro] = useState('');
@@ -26,7 +35,8 @@ export default function Login() {
         await axios.post('http://localhost:8080/login', {emailusuario, senhausuario})
         .then(response =>{
             if (response.data == 'O endereço informado não está vinculado a uma conta!' || response.data == 'A senha informada está incorreta!') return setMensagemErro(response.data);
-            if (response.data == 'A senha informada está correta!') return router.push('/profile');
+            Cookies.set('askhub', response.data, { expires: 3650, secure: false });
+            return router.push('/');
         });
     }
 

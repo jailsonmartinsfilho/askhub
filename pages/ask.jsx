@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from '../styles/cadastro.module.css';
+import styles from '../styles/ask.module.css';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
@@ -45,45 +45,31 @@ export default function Cadastro() {
 
         await axios.post('http://localhost:8080/cadastrar', {nomeusuario, emailusuario, senhausuario})
         .then(response =>{
+            console.log(response.data)
             if (response.data == 'O nome já está sendo usado!' || response.data == 'O email já está sendo usado!') return setMensagemErro(response.data);
-            Cookies.set('askhub', response.data, { expires: 3650, secure: false });
-            return router.push('/');
+            console.log(response.data)
+            if (response.data == 'Cadastro realizado com sucesso!') return router.push('/profile');
         });
     }
 
     return (
         <section className={styles.mainContainer}>
             <section className={styles.centralContainer}>
-            <img className={styles.logotext} src="logotext.png" alt=""/>
                 <div className={styles.cadastroContainer}>
-                    <h1 className={styles.cadastreseTexto}>Cadastre-se!</h1>
-
                     <div className={styles.inputsContainer}>
-                        <div className={styles.inputContainer}>
-                            <input value={nomeusuario} onChange={(event) => {setNomeUsuario(event.target.value)}} className={styles.input}type="text" id="nome" name="nome" placeholder='Nome de usuário' maxLength={20} pattern="[A-Za-z0-9]+"/>
-                        </div>
 
                         <div className={styles.inputContainer}>
-                            <input value={emailusuario}  onChange={(event) => {setEmailUsuario(event.target.value)}} className={styles.input}type="text" id="email" name="email" placeholder='Endereço de email' maxLength={100} pattern="[A-Za-z0-9]+"/>
-                        </div>
+                            <input value={nomeusuario} onChange={(event) => {setNomeUsuario(event.target.value)}} className={styles.input}type="text" id="nome" name="nome" placeholder='Faça uma pergunta ou diga algo que está pensando...' maxLength={150} pattern="[A-Za-z0-9]+"/>
 
-                        <div className={styles.inputContainer}>
-                            <input onChange={(event) => {setSenhaUsuario(event.target.value)}} value={senhausuario} className={styles.input}type="password" id="password" name="password" placeholder='Senha' maxLength={100} pattern="[A-Za-z0-9]+"/>
+                            <textarea className={styles.textarea} placeholder="Detalhe sobre o assunto aqui, caso seja necessário..." maxLength={2000}/>
                         </div>
-
-                        <div className={styles.inputContainer}>
-                            <input value={confirmarSenha} onChange={(event) => {setConfirmarSenha(event.target.value) }} className={styles.input}type="password" id="confirmpassword" name="confirmpassword" placeholder='Confirmar senha' maxLength={100} pattern="[A-Za-z0-9]+"/>
-                        </div>
-
-                        <ReCAPTCHA onChange={(token) => {setRecaptchaToken(token)}} className={styles.recaptcha} sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}/>
 
                         <div className={styles.mensagemErro}>{mensagemErro}</div>
 
-                        <button onClick={cadastrar} className={mensagemErro == '' ? styles.buttonCadastrar : styles.buttonCadastrarOff}>Cadastrar</button>
+                        <button onClick={cadastrar} className={styles.buttonCadastrar}>Ok!</button>
                     </div>
                 </div>
             </section>
-            <img className={styles.albedo} src="albedo1.png" alt=""/>
         </section>
     )
 }
