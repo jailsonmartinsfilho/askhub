@@ -1,5 +1,5 @@
 .mainContainer {
-    min-height: 100vh;
+    height: 100%;
     display: flex;
     justify-content: center;
     padding-bottom: 100px;
@@ -8,12 +8,14 @@
 .containerProfile{
     background-color: #1E1E2E;
     width: 70%;
-    min-height: 1300px;
+    height: 100%;
     height: max-content;
     margin-top: 50px;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.492);
+    padding: 30px;
+    color: white;
 }
 
 .containerBanner{
@@ -106,9 +108,8 @@
 .linhaHorizontal{
     background-color: #5A4D74;
     height: 3px;
-    width: 95%;
+    width: 100%;
     margin-top: 10px;
-    margin-left: 2%;
     opacity: 0.3;
 }
 
@@ -173,4 +174,138 @@
     margin-left: 5%;
     min-height: 400px;
     padding: 25px;
+}
+
+.containerContainerFotoPerfil{
+    background-color: #16141c;
+    height: 160px;
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.containerFotoPerfil{
+    background-color: white;
+    height: 140px;
+    width: 140px;
+    border-radius: 50%;
+}
+
+.containerContainerFotoCapa{
+    background-color: #16141c;
+    height: 160px;
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.containerFotoCapa{
+    background-color: white;
+    height: 140px;
+    width: 100%;
+}
+
+.tituloConfiguracoes{
+    font-weight: 600;
+    font-size: 28px;
+    pointer-events: none;
+}
+
+.particaoConfiguracao{
+    margin-top: 15px;
+}
+
+.particaoConfiguracao > *{
+    margin-top: 5px;
+}
+
+.subTitulos{
+    font-weight: 400;
+    font-size: 23px;
+    pointer-events: none;
+}
+
+.informacoes{
+    font-weight: 300;
+    font-size: 18px;
+    color: rgb(191, 191, 191);
+}
+
+.informacoes {
+    width: 100%;
+    height: 35px;
+    background-color: #181825;
+    border-radius: 3px;
+    border: 1px solid #ffffff1c;
+    padding: 27px;
+    padding-left: 15px;
+    color: #e4e3ecd3;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    margin-top: 10px;
+    transition: border-color 0.5s, box-shadow 0.5s;
+    display: flex;
+    align-items: center;
+    font-weight: 300;
+    font-size: 16px;
+}
+
+.informacoesBiografia {
+    background-color: #181825;
+    border-radius: 3px;
+    border: 1px solid #ffffff1c;
+    color: #e4e3ecd3;
+    padding: 20px;
+    width: 100%;
+    height: 200px;
+    font-weight: 300;
+    transition: border-color 0.5s, box-shadow 0.5s;
+    resize: none;
+    font-size: 16px;
+    padding-left: 15px;
+}
+
+.informacoes:focus, .informacoesBiografia:focus{
+    outline: #CAA6F7;
+    border-color: #CAA6F7;
+    box-shadow: 0 0 2px #CAA6F7;
+}
+
+.informacoes:hover, .informacoesBiografia:hover {
+    outline: #CAA6F7;
+    border-color: #CAA6F7;
+    box-shadow: 0 0 2px #CAA6F7;
+    transition: border-color 0.5s, box-shadow 0.5s;
+}
+
+.buttonCadastrar {
+    background-color: #987db9;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+    align-self: flex-end;
+}
+
+.buttonCadastrarOff {
+    background-color: #987db9;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+    opacity: 0.2;
+    pointer-events: none;
+    align-self: flex-end;
 }
