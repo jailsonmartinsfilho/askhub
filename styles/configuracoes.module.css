@@ -190,6 +190,9 @@
     height: 140px;
     width: 140px;
     border-radius: 50%;
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
 }
 
 .containerContainerFotoCapa{
@@ -206,6 +209,9 @@
     background-color: white;
     height: 140px;
     width: 100%;
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
 }
 
 .tituloConfiguracoes{

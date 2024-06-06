@@ -3,19 +3,27 @@ import axios from 'axios';
 import styles from '../styles/configuracoes.module.css';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
+import useCarregarImagens from '../hooks/carregarImagens';
 
-export default function Profile() {
+export default function Configuracoes() {
     const router = useRouter();
-
+    
+    const [token, setToken] = useState('');
+    const [idUsuario, setIdUsuario] = useState('');
+    const { fotoPerfilCarregada, fotoCapaCarregada } = useCarregarImagens(idUsuario);
     const [nomeUsuario, setNomeUsuario] = useState('');
     const [pronomesUsuario, setPronomesUsuario] = useState('');
     const [biografiaUsuario, setBiografiaUsuario] = useState('');
+    const [fotoPerfil, setFotoPerfil] = useState('');
+    const [fotoCapa, setFotoCapa] = useState('');
 
     const [alteradoNomeUsuario, setAlteradoNomeUsuario] = useState('');
     const [alteradoPronomesUsuario, setAlteradoPronomesUsuario] = useState('');
     const [alteradoBiografiaUsuario, setAlteradoBiografiaUsuario] = useState('');
+    const [alteradoFotoPerfil, setAlteradoFotoPerfil] = useState('');
+    const [alteradoFotoCapa, setAlteradoFotoCapa] = useState('');
 
-    const [dadosAlterados, setDadosAlterados] = useState('');
+    const [dadosAlterados, setDadosAlterados] = useState({});
 
     useEffect(() => {
         const verificarToken = async () => {
@@ -24,6 +32,7 @@ export default function Profile() {
 
             await axios.post('http://localhost:8080/buscarDadosConfiguracoes', { token })
                 .then(response => {
+                    setIdUsuario(response.data.idusuario);
                     setNomeUsuario(response.data.nomeusuario);
                     setPronomesUsuario(response.data.pronomesusuario || '');
                     setBiografiaUsuario(response.data.biografiausuario);
@@ -31,6 +40,7 @@ export default function Profile() {
                     setAlteradoNomeUsuario(response.data.nomeusuario);
                     setAlteradoPronomesUsuario(response.data.pronomesusuario || '');
                     setAlteradoBiografiaUsuario(response.data.biografiausuario);
+                    setToken(token);
                 });
         };
         verificarToken();
@@ -42,14 +52,44 @@ export default function Profile() {
             if (alteradoNomeUsuario !== nomeUsuario) dadosAlterados.nomeusuario = alteradoNomeUsuario;
             if (alteradoPronomesUsuario !== pronomesUsuario) dadosAlterados.pronomesusuario = alteradoPronomesUsuario;
             if (alteradoBiografiaUsuario !== biografiaUsuario) dadosAlterados.biografiausuario = alteradoBiografiaUsuario;
+            dadosAlterados.token = token
             setDadosAlterados(dadosAlterados);
         };
         atualizarDados();
     }, [alteradoNomeUsuario, alteradoPronomesUsuario, alteradoBiografiaUsuario]);
 
     const salvarDados = async () => {
-        if (Object.keys(dadosAlterados).length > 0) {
-            await axios.post('http://localhost:8080/atualizarDados', dadosAlterados);
+        if (Object.keys(dadosAlterados).length > 1 || alteradoFotoPerfil != '' || alteradoFotoCapa != '') {
+            const formData = new FormData();
+            if (alteradoFotoPerfil != '') formData.append('fotoperfil', fotoPerfil);
+            if (alteradoFotoCapa != '') formData.append('fotocapa', fotoCapa);
+
+            for (const key in dadosAlterados) {
+                formData.append(key, dadosAlterados[key]);
+            }
+
+            await axios.post('http://localhost:8080/atualizarDados', formData)
+                .then(response => {
+                    // window.location.reload();
+                    return router.push(`/profile/${alteradoNomeUsuario}`);
+                });
+
+        }
+    };
+
+    const mudarFotoPerfil = (event, setAlteradoFotoPerfil, setFotoPerfil) => {
+        const file = event.target.files[0];
+        if (file) {
+            setFotoPerfil(file)
+            setAlteradoFotoPerfil(URL.createObjectURL(file));
+        }
+    };
+
+    const mudarFotoCapa = (event, setAlteradoFotoCapa, setFotoCapa) => {
+        const file = event.target.files[0];
+        if (file) {
+            setFotoCapa(file)
+            setAlteradoFotoCapa(URL.createObjectURL(file));
         }
     };
 
@@ -85,17 +125,19 @@ export default function Profile() {
                 <div className={styles.particaoConfiguracao}>
                     <h2 className={styles.subTitulos}>Foto do perfil</h2>
                     <div className={styles.containerContainerFotoPerfil}>
-                        <div className={styles.containerFotoPerfil}></div>
+                        <div className={styles.containerFotoPerfil} style={{ backgroundImage: `url(${fotoPerfilCarregada})` }}></div>
                     </div>
+                    <input type="file" onChange={(event) => mudarFotoPerfil(event, setAlteradoFotoPerfil, setFotoPerfil)} />
                 </div>
 
                 <div className={styles.particaoConfiguracao}>
                     <h2 className={styles.subTitulos}>Foto da capa</h2>
                     <div className={styles.containerContainerFotoCapa}>
-                        <div className={styles.containerFotoCapa}></div>
+                        <div className={styles.containerFotoCapa} style={{ backgroundImage: `url(${fotoCapaCarregada})` }}></div>
                     </div>
+                    <input type="file" onChange={(event) => mudarFotoCapa(event, setAlteradoFotoCapa, setFotoCapa)} />
                 </div>
-                <button onClick={salvarDados} className={Object.keys(dadosAlterados).length > 0 ? styles.buttonCadastrar : styles.buttonCadastrarOff}>Salvar</button>
+                <button onClick={salvarDados} className={Object.keys(dadosAlterados).length > 1 || alteradoFotoPerfil != '' || alteradoFotoCapa != '' ? styles.buttonCadastrar : styles.buttonCadastrarOff}>Salvar</button>
             </div>
         </section>
     )

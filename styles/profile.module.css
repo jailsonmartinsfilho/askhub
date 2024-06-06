@@ -18,13 +18,16 @@
 
 .containerBanner{
     width: 100%;
-    height: 120px;
-    background-color: white;
+    height: 150px;
+    background-color: rgb(88, 8, 187);
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
 }
 
 .containerIcon{
     position: relative;
-    top: 20%;
+    top: 35%;
     left: 2%;
     width: 160px;
     height: 160px;
@@ -32,13 +35,15 @@
     background-color: aquamarine;
     border: 9px solid #1E1E2E;
     box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.478);
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
 }
 
 .containerInformacoes{
     width: 100%;
     height: max-content;
-    /* border: 1px solid pink; */
-    padding-left: 200px;
+    padding-left: 175px;
     display: flex;
     align-items: flex-end;
     gap: 10px;
@@ -48,7 +53,6 @@
 .containerInformacoes2{
     width: 100%;
     height: max-content;
-    /* border: 1px solid pink; */
     display: flex;
     flex-direction: column;
     padding-left: 50px;
@@ -89,7 +93,7 @@
 .containerBarraExperiencia{
     background-color: rgb(31, 25, 31);
     height: 5px;
-    width: 460px;
+    width: 365px;
 }
 
 .barraExperiencia{
@@ -121,7 +125,15 @@
 
 .textoBiografia{
     color: #CEC9CE;
-    font-size: 18px; 
+    font-size: 20px;
+    font-weight: 500; 
+    white-space: pre-wrap;
+}
+
+.textoDataCadastro{
+    color: #cec9ce8a;
+    font-size: 16px;
+    font-weight: 500; 
     white-space: pre-wrap;
 }
 

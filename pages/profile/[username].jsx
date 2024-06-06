@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import calcularTempo from '../../hooks/calcularTempo';
 import calcularPontos from '../../hooks/calcularPontos';
+import useCarregarImagens from '../../hooks/carregarImagens';
 
 import { FaMedal } from "react-icons/fa";
 import { GrConfigure } from "react-icons/gr";
@@ -15,6 +16,8 @@ import PerguntaPerfil from '../../components/PerguntaPerfil/PerguntaPerfil';
 export default function Profile() {
     const router = useRouter();
 
+    const [idUsuario, setIdUsuario] = useState('');
+    const { fotoPerfilCarregada, fotoCapaCarregada } = useCarregarImagens(idUsuario);
     const [nomeUsuario, setNomeUsuario] = useState('');
     const [biografiaUsuario, setBiografiaUsuario] = useState('');
     const [dataCadastro, setDataCadastro] = useState('');
@@ -29,11 +32,12 @@ export default function Profile() {
             const username = window.location.pathname.split('/')[2];
             await axios.post('http://localhost:8080/buscarDadosPerfil', {username})
             .then(response =>{
-                setPontosProximoNivel(calcularPontos(response.data.nivelusuario))
+                setIdUsuario(response.data.idusuario);
                 setNomeUsuario(response.data.nomeusuario);
+                setPontosProximoNivel(calcularPontos(response.data.nivelusuario));
+                setPontosTotalUsuario(response.data.pontostotalusuario);
                 setDataCadastro(new Date(response.data.datacadastrousuario).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }));
                 setBiografiaUsuario(response.data.biografiausuario);
-                setPontosTotalUsuario(response.data.pontostotalusuario);
             });
         };
         verificarToken();
@@ -45,8 +49,8 @@ export default function Profile() {
         <section className={styles.mainContainer}>
             <div className={styles.containerProfile}>
 
-                <div className={styles.containerBanner}>
-                    <div className={styles.containerIcon}></div>
+                <div className={styles.containerBanner} style={{ backgroundImage: `url(${fotoCapaCarregada})`}}>
+                    <div className={styles.containerIcon} style={{ backgroundImage: `url(${fotoPerfilCarregada})`}}></div>
                 </div>
 
                 <div className={styles.containerInformacoes}>
@@ -73,11 +77,8 @@ export default function Profile() {
                 </div>
 
                 <div className={styles.containerBiografia}>
-                    <p className={styles.textoBiografia}>Membro desde {dataCadastro}</p>
+                    <p className={styles.textoDataCadastro}>Membro desde {dataCadastro}</p>
                 </div>
-
-
-                <div className={styles.linhaHorizontal}></div>
 
                 <div className={styles.containerGuias}>
                     <div onClick={() => setGuiaAtivaNome('Perguntas')} className={guiaAtivaNome === 'Perguntas' ? styles.guiaSelecionada : styles.guiaPerguntas}>Perguntas</div>
@@ -87,7 +88,6 @@ export default function Profile() {
                 </div>
 
                 <div className={styles.containerAtividades}>
-                    <PerguntaPerfil />
                     <PerguntaPerfil />
                 </div>
             </div>
