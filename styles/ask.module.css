@@ -14,26 +14,17 @@
 .cadastroContainer {
     background-color: #1E1E2E;
     width: 90%;
-    height: 90%;
-    border-radius: 10px;
+    height: max-content;
     align-items: center;
     flex-direction: column;
     display: flex;
     padding: 20px;
-    border-color: #bab8bd34;
-    transition: border-color 0.5s, box-shadow 0.5s;
-    overflow: hidden;
 }
 
-.cadastroContainer:hover {
-    border-color: #cba6f76c;
-    box-shadow: 0 0 2px #cba6f794;
-    transition: border-color 0.5s, box-shadow 0.5s;
-}
-
-.inputsContainer{
+.inputsContainer {
     width: 90%;
 }
+
 .input {
     width: 100%;
     height: 35px;
@@ -49,7 +40,7 @@
     transition: border-color 0.5s, box-shadow 0.5s;
 }
 
-.input:focus{
+.input:focus {
     outline: #CAA6F7;
     border-color: #cba6f768;
     box-shadow: 0 0 2px #CAA6F7;
@@ -61,7 +52,7 @@
     box-shadow: 0 0 2px #CAA6F7;
 }
 
-.textarea:focus{
+.textarea:focus {
     outline: #CAA6F7;
     border-color: #cba6f768;
     box-shadow: 0 0 2px #CAA6F7;
@@ -76,7 +67,7 @@
 .textarea {
     width: 100%;
     padding: 20px;
-    min-height: 350px;
+    min-height: 270px;
     border: none;
     box-sizing: border-box;
     margin-bottom: 10px;
@@ -94,8 +85,7 @@
     border: none;
 }
 
-.mensagemErro{
-    margin-top: 10px;
+.mensagemErro {
     color: rgb(240, 30, 30);
     opacity: 0.8;
 }
@@ -109,10 +99,71 @@
     cursor: pointer;
     font-size: 16px;
     margin-top: 10px;
+    margin-bottom: 15px;
     transition: background-color 0.3s;
 }
 
 .buttonCadastrar:hover {
     background-color: #523b6e;
     transition: background-color 0.3s;
+}
+
+.buttonCadastrarOff {
+    background-color: #987db9;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.selectContainer {
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.select {
+    width: 200px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #181825;
+    border-color: #333;
+    color: white;
+}
+
+.select:hover {
+    border-color: #333;
+}
+
+.select:focus {
+    outline: none;
+    border-color: #314255;
+}
+
+.categoriaTexto {
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+    margin-right: 20px;
+}
+
+.select option:checked {
+    background-color: #7b5e77;
+    color: #fff;
+}
+
+.tituloPergunta {
+    font-weight: 600;
+    font-size: 28px;
+    pointer-events: none;
+    color: white;
+    align-self: flex-start;
+    padding-left: 60px;
+    margin-top: 20px;
 }

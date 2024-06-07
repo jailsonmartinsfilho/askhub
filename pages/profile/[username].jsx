@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import calcularTempo from '../../hooks/calcularTempo';
 import calcularPontos from '../../hooks/calcularPontos';
+import Error from '../../components/error/error';
 import useCarregarImagens from '../../hooks/carregarImagens';
 
 import { FaMedal } from "react-icons/fa";
@@ -46,6 +47,7 @@ export default function Profile() {
     const [guiaAtivaNome, setGuiaAtivaNome] = useState('Perguntas');
 
     return (
+        nomeUsuario ? (
         <section className={styles.mainContainer}>
             <div className={styles.containerProfile}>
 
@@ -92,5 +94,6 @@ export default function Profile() {
                 </div>
             </div>
         </section>
+        ) : (<Error />)
     )
 }
