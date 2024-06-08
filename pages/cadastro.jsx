@@ -4,6 +4,7 @@ import styles from '../styles/cadastro.module.css';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
+import Link from 'next/link';
 
 export default function Cadastro() {
     const router = useRouter();
@@ -57,6 +58,8 @@ export default function Cadastro() {
             <img className={styles.logotext} src="logotext.png" alt=""/>
                 <div className={styles.cadastroContainer}>
                     <h1 className={styles.cadastreseTexto}>Cadastre-se!</h1>
+
+                    <Link href="/login" legacyBehavior><a className={styles.link}>Já tem uma conta? Faça log-in clicando aqui!</a></Link>
 
                     <div className={styles.inputsContainer}>
                         <div className={styles.inputContainer}>

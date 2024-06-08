@@ -4,6 +4,7 @@ import styles from '../styles/login.module.css';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
+import Link from 'next/link';
 
 export default function Login() {
     const router = useRouter();
@@ -46,6 +47,8 @@ export default function Login() {
             <img className={styles.logotext} src="logotext.png" alt=""/>
                 <div className={styles.cadastroContainer}>
                     <h1 className={styles.cadastreseTexto}>Log-in!</h1>
+
+                    <Link href="/cadastro" legacyBehavior><a className={styles.link}>Não tem uma conta? Cadastre-se clicando aqui!</a></Link>
 
                     <div className={styles.inputsContainer}>
                         <div className={styles.inputContainer}>
