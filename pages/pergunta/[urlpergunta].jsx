@@ -1,99 +1,88 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from '../../styles/profile.module.css';
+import styles from '../../styles/pergunta.module.css';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
-import calcularTempo from '../../hooks/calcularTempo';
-import calcularPontos from '../../hooks/calcularPontos';
-import Error from '../../components/error/error';
 import useCarregarImagens from '../../hooks/carregarImagens';
-
-import { FaMedal } from "react-icons/fa";
-import { GrConfigure } from "react-icons/gr";
-import { FaHammer } from "react-icons/fa";
-
-import PerguntaPerfil from '../../components/PerguntaPerfil/PerguntaPerfil';
+import { FaHeart } from "react-icons/fa6";
+import { MdCategory } from "react-icons/md";
+import { MdAccessTimeFilled } from "react-icons/md";
+import { FaEye } from "react-icons/fa";
+import { BiSolidCategory } from "react-icons/bi";
+import Link from 'next/link';
+import calcularTempo from '../../hooks/calcularTempo';
 
 export default function Pergunta() {
     const router = useRouter();
 
     const [idUsuario, setIdUsuario] = useState('');
-    const { fotoPerfilCarregada, fotoCapaCarregada } = useCarregarImagens(idUsuario);
     const [nomeUsuario, setNomeUsuario] = useState('');
-    const [biografiaUsuario, setBiografiaUsuario] = useState('');
-    const [dataCadastro, setDataCadastro] = useState('');
-    const [pontosTotalUsuario, setPontosTotalUsuario] = useState(0);
-    const [pontosProximoNivel, setPontosProximoNivel] = useState(0);
+    const { fotoPerfilCarregada, fotoCapaCarregada } = useCarregarImagens(idUsuario);
+    const [tempoPergunta, setTempoPergunta] = useState('');
+    const [tituloPergunta, setTituloPergunta] = useState('');
+    const [descricaoPergunta, setDescricaoPergunta] = useState('');
+    const [visualizacoesPergunta, setVisualizacoesPergunta] = useState('');
+    const [curtidasPergunta, setCurtidasPergunta] = useState('');
+    const [numeroRespostasPergunta, setNumeroRespostasPergunta] = useState('');
+    const [categoriaPergunta, setCategoriaPergunta] = useState('');
+
 
     useEffect(() => {
         const verificarToken = async () => {
             const token = Cookies.get('askhub');
             if (!token) return router.push('/login');
 
-            const username = window.location.pathname.split('/')[2];
-            await axios.post('http://localhost:8080/buscarDadosPerfil', {username})
-            .then(response =>{
-                setIdUsuario(response.data.idusuario);
-                setNomeUsuario(response.data.nomeusuario);
-                setPontosProximoNivel(calcularPontos(response.data.nivelusuario));
-                setPontosTotalUsuario(response.data.pontostotalusuario);
-                setDataCadastro(new Date(response.data.datacadastrousuario).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }));
-                setBiografiaUsuario(response.data.biografiausuario);
-            });
+            const urlpergunta = window.location.pathname.split('/')[2];
+            console.log(urlpergunta);
+
+            await axios.post('http://localhost:8080/buscarDadosPergunta', { urlpergunta })
+                .then(response => {
+                    console.log(response.data)
+                    setIdUsuario(response.data.idusuariopergunta);
+                    setNomeUsuario(response.data.nomeusuariopergunta);
+                    setTempoPergunta(calcularTempo(response.data.tempopergunta));
+                    setTituloPergunta(response.data.titulopergunta);
+                    setDescricaoPergunta(response.data.descricaopergunta);
+                    setCurtidasPergunta(response.data.curtidaspergunta);
+                    setVisualizacoesPergunta(response.data.visualizacoespergunta);
+                    setNumeroRespostasPergunta(response.data.numerorespostaspergunta);
+                    setCategoriaPergunta(response.data.categoriapergunta);
+                });
         };
         verificarToken();
     }, []);
 
-    const [guiaAtivaNome, setGuiaAtivaNome] = useState('Perguntas');
-
     return (
-        nomeUsuario ? (
         <section className={styles.mainContainer}>
             <div className={styles.containerProfile}>
+                <div className={styles.containerInformacoes}>
+                    <Link href={`/profile/${nomeUsuario}`} className={styles.containerFotoNome}>
+                        <div className={styles.containerIcon} style={{ backgroundImage: `url(${fotoPerfilCarregada})` }}></div>
+                        <p className={styles.textoNome}>{nomeUsuario}</p>
+                    </Link>
 
-                <div className={styles.containerBanner} style={{ backgroundImage: `url(${fotoCapaCarregada})`}}>
-                    <div className={styles.containerIcon} style={{ backgroundImage: `url(${fotoPerfilCarregada})`}}></div>
+                    <div className={styles.containerTituloDescricao}>
+                        <p className={styles.textoTituloPergunta}>{tituloPergunta}</p>
+                        <div className={styles.linhaHorizontal}></div>
+                        <p className={styles.textoDescricaoPergunta}>{descricaoPergunta}</p>
+                    </div>
+
+                    <div className={styles.containerCurtidasVisuaizacoesCategoriaTempo}>
+                        <p className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><FaHeart /> <p className={styles.subTexto}>{curtidasPergunta}</p></p>
+                        <p className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><FaEye /> <p className={styles.subTexto}>{visualizacoesPergunta}</p></p>
+                        <p className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><MdCategory /> <p className={styles.subTexto}>{categoriaPergunta}</p></p>
+                        <p className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><MdAccessTimeFilled /> <p className={styles.subTexto}>{tempoPergunta}</p></p>
+                    </div>
+                </div>
+
+                <div className={styles.containerNumeroRespostas}>
+                    <p className={styles.textoNumeroRespostas}>{numeroRespostasPergunta}<p style={{ color: 'white', marginLeft: 5 }}>Respostas</p></p>
                 </div>
 
                 <div className={styles.containerInformacoes}>
-                    <p className={styles.textoNome}>{nomeUsuario}</p>
-      
-
-                    <div className={styles.containerMedalha}>
-                        <FaHammer  className={styles.medalha} />
-                        <p>Desenvolvedor</p>
-                    </div>
-
-                </div>
-
-                <div className={styles.containerInformacoes2}>
-                    <div className={styles.containerBarraExperiencia}>
-                        <div className={styles.barraExperiencia}></div>
-
-                    </div>
-                    <p className={styles.textoExperiencia}>{pontosTotalUsuario}/{pontosProximoNivel} | 0%</p>
-                </div>
-
-                <div className={styles.containerBiografia}>
-                    <p className={styles.textoBiografia}>{biografiaUsuario}</p>
-                </div>
-
-                <div className={styles.containerBiografia}>
-                    <p className={styles.textoDataCadastro}>Membro desde {dataCadastro}</p>
-                </div>
-
-                <div className={styles.containerGuias}>
-                    <div onClick={() => setGuiaAtivaNome('Perguntas')} className={guiaAtivaNome === 'Perguntas' ? styles.guiaSelecionada : styles.guiaPerguntas}>Perguntas</div>
-                    <div onClick={() => setGuiaAtivaNome('Respostas')} className={guiaAtivaNome === 'Respostas' ? styles.guiaSelecionada : styles.guiaPerguntas}>Respostas</div>
-                    <div onClick={() => setGuiaAtivaNome('Seguidores')} className={guiaAtivaNome === 'Seguidores' ? styles.guiaSelecionada : styles.guiaPerguntas}>Seguidores</div>
-                    <div onClick={() => setGuiaAtivaNome('Seguindo')} className={guiaAtivaNome === 'Seguindo' ? styles.guiaSelecionada : styles.guiaPerguntas}>Seguindo</div>
-                </div>
-
-                <div className={styles.containerAtividades}>
-                    <PerguntaPerfil />
+                    
                 </div>
             </div>
         </section>
-        ) : (<Error />)
     )
 }

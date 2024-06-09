@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
 
-const categorias = ['Culinária', 'Música', 'Filosofia', 'Saúde e bem-estar', 'Relacionamentos', 'Jogos, Séries, Filmes, Animes', 'Política', 'Curiosidades e Fatos Interessantes', 'Empreendedorismo e Economia', 'Estudos', 'Dia a dia'];
+const categorias = ['Desabafo', 'Culinária', 'Música', 'Filosofia', 'Saúde e bem-estar', 'Relacionamentos', 'Jogos, Séries, Filmes, Animes', 'Política', 'Curiosidades e Fatos Interessantes', 'Empreendedorismo e Economia', 'Estudos', 'Dia a dia'];
 
 export default function Cadastro() {
     const router = useRouter();
@@ -38,11 +38,10 @@ export default function Cadastro() {
     const postarPergunta = async (event) => {
         const errorMessage = validarPostagem({ tituloPergunta });
         if (errorMessage != '') return;
-        
+
         await axios.post('http://localhost:8080/postarPergunta', { token, tituloPergunta, descricaoPergunta, categoriaPergunta })
             .then(response => {
-                console.log(response.data)
-                // return router.push('/profile');
+                return router.push(`pergunta/${response.data}`);
             });
     }
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
+import styles from '../styles/index.module.css';
 
 export default function Index() {
     const router = useRouter();
@@ -20,6 +21,12 @@ export default function Index() {
                 <title>AskHub</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+
+            <section className={styles.mainContainer}>
+                <div className={styles.containerPergunta}>
+
+                </div>
+            </section>
         </div>
     )
 }

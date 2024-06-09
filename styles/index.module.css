@@ -1,0 +1,20 @@
+.mainContainer {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 100px;
+}
+
+.containerPergunta{
+    background-color: #1E1E2E;
+    width: 70%;
+    height: 100%;
+    height: max-content;
+    margin-top: 50px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.492);
+    padding: 30px;
+    color: white;
+    border: 1px solid pink;
+}

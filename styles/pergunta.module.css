@@ -1,0 +1,140 @@
+.mainContainer {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 100px;
+}
+
+.containerInformacoes{
+    width: 100%;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    min-height: 170px;
+    height: max-content;
+    border: 1px solid rgba(255, 255, 255, 0.161);
+    border-radius: 5px;
+}
+
+.containerProfile{
+    width: 70%;
+    min-height: 1300px;
+    height: max-content;
+    margin-top: 50px;
+    border-radius: 10px;
+}
+
+.containerFotoNome{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    height: max-content;
+    width: 100%;
+    margin-left: 40px;
+    margin-top: 25px;
+    text-decoration: none;
+}
+
+.containerIcon{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgb(173, 173, 173);
+    outline: 3px solid #c3c3c3;
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.textoNome{
+    color: #CEC9CE;
+    font-size: 20px;
+    font-weight: 500;
+    margin-left: 10px;
+}
+
+.containerTituloDescricao{
+    display: flex;
+    flex-direction: column;
+    height: max-content;
+    width: 100%;
+    padding-left: 25px;
+    padding-top: 15px;
+}
+
+.textoTituloPergunta{
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 500;
+    margin-left: 10px; 
+}
+
+.textoDescricaoPergunta{
+    color: #c9c9c9;
+    font-size: 17px;
+    font-weight: 500;
+    margin-left: 10px; 
+    font-weight: 400;
+    padding-top: 10px;
+}
+
+.linhaHorizontal{
+    background-color: #cfcfcf3f;
+    height: 1px;
+    width: 100%;
+    margin-top: 10px;
+    width: 95%;
+    margin-left: 5px;
+}
+
+.containerCurtidasVisuaizacoesCategoriaTempo{
+    display: flex;
+    flex-direction: row;
+    height: max-content;
+    width: 100%;
+    padding-left: 25px;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 15px;
+    justify-content: space-between;
+    padding-left: 35px;
+    padding-right: 35px;
+    padding-top: 40px;
+    opacity: 0.7;
+}
+
+.containerNumeroRespostas{
+    height: max-content;
+    width: 100%;
+    margin-bottom: 15px;
+    padding-left: 35px;
+    padding-top: 30px;
+    font-weight: 700;
+}
+
+.textoCurtidasVisuaizacoesCategoriaTempo{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    color: white;
+    font-size: 22px;
+}
+
+.textoNumeroRespostas{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    color: white;
+    font-size: 25px;
+    font-weight: 800;
+    color: cadetblue;
+}
+
+.subTexto{
+    margin-left: 5px;
+    font-weight: 300;
+    font-size: 15px;
+}

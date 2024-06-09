@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import styles from '../../styles/profile.module.css';
 import { useRouter } from 'next/router';
@@ -16,6 +16,7 @@ import PerguntaPerfil from '../../components/PerguntaPerfil/PerguntaPerfil';
 
 export default function Profile() {
     const router = useRouter();
+    const observerRef = useRef();
 
     const [idUsuario, setIdUsuario] = useState('');
     const { fotoPerfilCarregada, fotoCapaCarregada } = useCarregarImagens(idUsuario);
@@ -24,30 +25,55 @@ export default function Profile() {
     const [dataCadastro, setDataCadastro] = useState('');
     const [pontosTotalUsuario, setPontosTotalUsuario] = useState(0);
     const [pontosProximoNivel, setPontosProximoNivel] = useState(0);
+    const [comeco, setComeco] = useState(0);
+    const [perguntas, setPerguntas] = useState([]);
 
     useEffect(() => {
         const verificarToken = async () => {
             const token = Cookies.get('askhub');
             if (!token) return router.push('/login');
 
-            const username = window.location.pathname.split('/')[2];
-            await axios.post('http://localhost:8080/buscarDadosPerfil', {username})
+            const nomeusuario = window.location.pathname.split('/')[2];
+            await axios.post('http://localhost:8080/buscarDadosPerfil', {nomeusuario, comeco})
             .then(response =>{
-                setIdUsuario(response.data.idusuario);
-                setNomeUsuario(response.data.nomeusuario);
-                setPontosProximoNivel(calcularPontos(response.data.nivelusuario));
-                setPontosTotalUsuario(response.data.pontostotalusuario);
-                setDataCadastro(new Date(response.data.datacadastrousuario).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }));
-                setBiografiaUsuario(response.data.biografiausuario);
+                if (!response.data.dadosPerfil){
+                    setNomeUsuario('Usuário não encontrado!');
+                }else {
+                    setIdUsuario(response.data.dadosPerfil.idusuario);
+                    setNomeUsuario(response.data.dadosPerfil.nomeusuario);
+                    setPontosProximoNivel(calcularPontos(response.data.dadosPerfil.nivelusuario));
+                    setPontosTotalUsuario(response.data.dadosPerfil.pontostotalusuario);
+                    setDataCadastro(new Date(response.data.dadosPerfil.datacadastrousuario).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }));
+                    setBiografiaUsuario(response.data.dadosPerfil.biografiausuario);
+                    setPerguntas(response.data.perguntasUsuario);
+                } 
             });
         };
         verificarToken();
     }, []);
 
+    useEffect(() => {
+        const carregarMaisPerguntas = async () => {
+            console.log(comeco);
+            await axios.post('http://localhost:8080/buscarMaisPerguntas', {nomeUsuario, comeco})
+            .then(response =>{
+                setPerguntas(prevPerguntas => [...prevPerguntas, ...response.data]);
+            });
+        };
+        if (comeco != 0) carregarMaisPerguntas();
+    }, [comeco]); 
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+          entries => {if (entries[0].isIntersecting) setComeco(prevComeco => prevComeco + 15);}, { threshold: 1 });
+        if (observerRef.current) observer.observe(observerRef.current);
+        return () => {if (observerRef.current)  observer.unobserve(observerRef.current)};
+      }, []);
+
     const [guiaAtivaNome, setGuiaAtivaNome] = useState('Perguntas');
 
     return (
-        nomeUsuario ? (
+        nomeUsuario != 'Usuário não encontrado!' ? (
         <section className={styles.mainContainer}>
             <div className={styles.containerProfile}>
 
@@ -90,8 +116,11 @@ export default function Profile() {
                 </div>
 
                 <div className={styles.containerAtividades}>
-                    <PerguntaPerfil />
+                {perguntas.map(pergunta => (
+                    <PerguntaPerfil key={pergunta.idpergunta} tempopergunta={pergunta.tempopergunta} titulopergunta={pergunta.titulopergunta} numerorespostas={pergunta.numerorespostaspergunta} urlpergunta={pergunta.urlpergunta}/>
+                ))}
                 </div>
+                <div ref={observerRef}></div>
             </div>
         </section>
         ) : (<Error />)
