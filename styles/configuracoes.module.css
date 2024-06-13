@@ -10,10 +10,10 @@
     width: 70%;
     height: 100%;
     height: max-content;
-    margin-top: 50px;
-    border-radius: 10px;
+    margin-top: 60px;
     overflow: hidden;
-    box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.492);
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.172);
     padding: 30px;
     color: white;
 }

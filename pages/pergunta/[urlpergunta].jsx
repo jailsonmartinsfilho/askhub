@@ -11,13 +11,16 @@ import { FaEye } from "react-icons/fa";
 import { BiSolidCategory } from "react-icons/bi";
 import Link from 'next/link';
 import calcularTempo from '../../hooks/calcularTempo';
+import Navbar from '../../components/Navbar/Navbar';
 
 export default function Pergunta() {
     const router = useRouter();
 
     const [idUsuario, setIdUsuario] = useState('');
+    const [extensaoFotoPerfilUsuario, setExtensaoFotoPerfilUsuario] = useState(undefined);
+    const [extensaoFotoCapaUsuario, setExtensaoFotoCapaUsuario] = useState(undefined);
     const [nomeUsuario, setNomeUsuario] = useState('');
-    const { fotoPerfilCarregada, fotoCapaCarregada } = useCarregarImagens(idUsuario);
+    const { fotoPerfilCarregada, fotoCapaCarregada } = useCarregarImagens(idUsuario, extensaoFotoPerfilUsuario, extensaoFotoCapaUsuario);
     const [tempoPergunta, setTempoPergunta] = useState('');
     const [tituloPergunta, setTituloPergunta] = useState('');
     const [descricaoPergunta, setDescricaoPergunta] = useState('');
@@ -25,7 +28,6 @@ export default function Pergunta() {
     const [curtidasPergunta, setCurtidasPergunta] = useState('');
     const [numeroRespostasPergunta, setNumeroRespostasPergunta] = useState('');
     const [categoriaPergunta, setCategoriaPergunta] = useState('');
-
 
     useEffect(() => {
         const verificarToken = async () => {
@@ -47,6 +49,9 @@ export default function Pergunta() {
                     setVisualizacoesPergunta(response.data.visualizacoespergunta);
                     setNumeroRespostasPergunta(response.data.numerorespostaspergunta);
                     setCategoriaPergunta(response.data.categoriapergunta);
+                    setExtensaoFotoPerfilUsuario(response.data.extensaofotoperfilusuario);
+                    setExtensaoFotoCapaUsuario(response.data.extensaofotocapausuario);
+                    console.log(response.data)
                 });
         };
         verificarToken();
@@ -54,6 +59,7 @@ export default function Pergunta() {
 
     return (
         <section className={styles.mainContainer}>
+            <Navbar />
             <div className={styles.containerProfile}>
                 <div className={styles.containerInformacoes}>
                     <Link href={`/profile/${nomeUsuario}`} className={styles.containerFotoNome}>
@@ -68,20 +74,18 @@ export default function Pergunta() {
                     </div>
 
                     <div className={styles.containerCurtidasVisuaizacoesCategoriaTempo}>
-                        <p className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><FaHeart /> <p className={styles.subTexto}>{curtidasPergunta}</p></p>
-                        <p className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><FaEye /> <p className={styles.subTexto}>{visualizacoesPergunta}</p></p>
-                        <p className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><MdCategory /> <p className={styles.subTexto}>{categoriaPergunta}</p></p>
-                        <p className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><MdAccessTimeFilled /> <p className={styles.subTexto}>{tempoPergunta}</p></p>
+                        <div className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><FaEye /> <div className={styles.subTexto}>{visualizacoesPergunta}</div></div>
+                        <div className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><FaHeart /> <div className={styles.subTexto}>{curtidasPergunta}</div></div>
+                        <div className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><MdCategory /> <div className={styles.subTexto}>{categoriaPergunta}</div></div>
+                        <div className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><MdAccessTimeFilled /> <div className={styles.subTexto}>{tempoPergunta}</div></div>
                     </div>
                 </div>
 
                 <div className={styles.containerNumeroRespostas}>
-                    <p className={styles.textoNumeroRespostas}>{numeroRespostasPergunta}<p style={{ color: 'white', marginLeft: 5 }}>Respostas</p></p>
+                    <div className={styles.textoNumeroRespostas}>{numeroRespostasPergunta}<div style={{ color: 'white', marginLeft: 5 }}>Respostas</div></div>
                 </div>
+                <div className={styles.containerInformacoes}></div>
 
-                <div className={styles.containerInformacoes}>
-                    
-                </div>
             </div>
         </section>
     )

@@ -1,0 +1,22 @@
+.googleButton{
+    width: 314px;
+    height: 80px;
+    color: black;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background-color: rgb(38, 27, 59);
+    border: none;
+    color: white;
+    padding-left: 13px;
+    border: 1px solid rgba(255, 255, 255, 0.111);
+    cursor: pointer;
+}
+
+.googleButton:hover{
+    background-color: rgb(70, 48, 110);
+    
+}

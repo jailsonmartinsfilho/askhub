@@ -5,6 +5,8 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
 
+import Navbar from '../components/Navbar/Navbar';
+
 const categorias = ['Desabafo', 'Culinária', 'Música', 'Filosofia', 'Saúde e bem-estar', 'Relacionamentos', 'Jogos, Séries, Filmes, Animes', 'Política', 'Curiosidades e Fatos Interessantes', 'Empreendedorismo e Economia', 'Estudos', 'Dia a dia'];
 
 export default function Cadastro() {
@@ -47,6 +49,7 @@ export default function Cadastro() {
 
     return (
         <section className={styles.mainContainer}>
+            <Navbar />
             <section className={styles.centralContainer}>
                 <div className={styles.cadastroContainer}>
                     <h1 className={styles.tituloPergunta}>Postar uma pergunta</h1>

@@ -1,0 +1,17 @@
+.googleButton{
+    width: 314px;
+    height: 80px;
+    color: black;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.googleButton:hover{
+    background-color: rgb(174, 173, 173);
+}

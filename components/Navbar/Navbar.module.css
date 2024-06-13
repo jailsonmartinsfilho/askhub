@@ -1,0 +1,41 @@
+.containerHeader{
+    height: max-content;
+    position: fixed;
+    top: -2px;
+    z-index: 11;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.containerNavbar {
+    width: max-content;
+    height: max-content;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 8px;
+    backdrop-filter: blur(6px); 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.361);
+    border-right: 1px solid rgba(255, 255, 255, 0.361);
+    border-left: 1px solid rgba(255, 255, 255, 0.361);
+    transition: top 0.7s ease;
+    align-items: center;
+    display: flex;
+    color: rgb(235, 235, 235);
+    font-size: 25px;
+    justify-content: space-around;
+    gap: 25px;
+}
+
+.containerNavbar > * {
+    cursor: pointer;
+    transition: color 0.3s ease;
+    color: rgb(217, 217, 217);
+}
+
+.containerNavbar > *:hover {
+    color: rgb(128, 73, 132);
+    transition: color 0.3s ease;
+}

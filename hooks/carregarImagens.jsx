@@ -1,38 +1,22 @@
 import { useState, useEffect } from 'react';
 
-const useCarregarImagens = (idUsuario) => {
+const useCarregarImagens = (idUsuario, extensaoFotoPerfilUsuario, extensaoFotoCapaUsuario) => {
   const [fotoPerfilCarregada, setFotoPerfilCarregada] = useState('/icons/default.png');
   const [fotoCapaCarregada, setFotoCapaCarregada] = useState('');
 
   useEffect(() => {
-    const extensoes = ['.jpg', '.jpeg', '.png', '.gif'];
-
     const carregarFotoPerfil = async () => {
-      for (const extensao of extensoes) {
-        try{
-          const resposta = await fetch(`/icons/${idUsuario}${extensao}`);
-          if (resposta.ok) {
-            setFotoPerfilCarregada(`/icons/${idUsuario}${extensao}`);
-            break;
-          }
-        }catch{}
-      }
+      setFotoPerfilCarregada(`/icons/${idUsuario}${extensaoFotoPerfilUsuario}`);
     };
 
     const carregarFotoCapa = async () => {
-      for (const extensao of extensoes) {
-        try {
-          const resposta = await fetch(`/capas/${idUsuario}${extensao}`);
-          if (resposta.ok) {
-            setFotoCapaCarregada(`/capas/${idUsuario}${extensao}`);
-            break;
-          }
-        } catch{}
-      }
+      setFotoCapaCarregada(`/capas/${idUsuario}${extensaoFotoCapaUsuario}`);
     };
 
-    if (idUsuario) {
+    if (extensaoFotoPerfilUsuario) {
       carregarFotoPerfil();
+    }
+    if (extensaoFotoCapaUsuario) {
       carregarFotoCapa();
     }
   }, [idUsuario]);

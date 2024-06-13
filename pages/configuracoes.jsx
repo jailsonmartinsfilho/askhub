@@ -4,6 +4,7 @@ import styles from '../styles/configuracoes.module.css';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import useCarregarImagens from '../hooks/carregarImagens';
+import Navbar from '../components/Navbar/Navbar';
 
 export default function Configuracoes() {
     const router = useRouter();
@@ -95,6 +96,7 @@ export default function Configuracoes() {
 
     return (
         <section className={styles.mainContainer}>
+            <Navbar />
             <div className={styles.containerProfile}>
                 <h1 className={styles.tituloConfiguracoes}>Configurações da conta</h1>
 

@@ -7,24 +7,25 @@ import calcularTempo from '../../hooks/calcularTempo';
 import calcularPontos from '../../hooks/calcularPontos';
 import Error from '../../components/error/error';
 import useCarregarImagens from '../../hooks/carregarImagens';
-
-import { FaMedal } from "react-icons/fa";
-import { GrConfigure } from "react-icons/gr";
 import { FaHammer } from "react-icons/fa";
 
 import PerguntaPerfil from '../../components/PerguntaPerfil/PerguntaPerfil';
+import Navbar from '../../components/Navbar/Navbar';
 
 export default function Profile() {
     const router = useRouter();
     const observerRef = useRef();
 
     const [idUsuario, setIdUsuario] = useState('');
-    const { fotoPerfilCarregada, fotoCapaCarregada } = useCarregarImagens(idUsuario);
+    const [extensaoFotoPerfilUsuario, setExtensaoFotoPerfilUsuario] = useState(undefined);
+    const [extensaoFotoCapaUsuario, setExtensaoFotoCapaUsuario] = useState(undefined);
+    const { fotoPerfilCarregada, fotoCapaCarregada } = useCarregarImagens(idUsuario, extensaoFotoPerfilUsuario, extensaoFotoCapaUsuario);
     const [nomeUsuario, setNomeUsuario] = useState('');
     const [biografiaUsuario, setBiografiaUsuario] = useState('');
     const [dataCadastro, setDataCadastro] = useState('');
     const [pontosTotalUsuario, setPontosTotalUsuario] = useState(0);
     const [pontosProximoNivel, setPontosProximoNivel] = useState(0);
+
     const [comeco, setComeco] = useState(0);
     const [perguntas, setPerguntas] = useState([]);
 
@@ -39,13 +40,15 @@ export default function Profile() {
                 if (!response.data.dadosPerfil){
                     setNomeUsuario('Usuário não encontrado!');
                 }else {
-                    setIdUsuario(response.data.dadosPerfil.idusuario);
                     setNomeUsuario(response.data.dadosPerfil.nomeusuario);
                     setPontosProximoNivel(calcularPontos(response.data.dadosPerfil.nivelusuario));
                     setPontosTotalUsuario(response.data.dadosPerfil.pontostotalusuario);
                     setDataCadastro(new Date(response.data.dadosPerfil.datacadastrousuario).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }));
                     setBiografiaUsuario(response.data.dadosPerfil.biografiausuario);
                     setPerguntas(response.data.perguntasUsuario);
+                    setExtensaoFotoPerfilUsuario(response.data.dadosPerfil.extensaofotoperfilusuario);
+                    setExtensaoFotoCapaUsuario(response.data.dadosPerfil.extensaofotocapausuario);
+                    setIdUsuario(response.data.dadosPerfil.idusuario);
                 } 
             });
         };
@@ -75,6 +78,7 @@ export default function Profile() {
     return (
         nomeUsuario != 'Usuário não encontrado!' ? (
         <section className={styles.mainContainer}>
+            <Navbar />
             <div className={styles.containerProfile}>
 
                 <div className={styles.containerBanner} style={{ backgroundImage: `url(${fotoCapaCarregada})`}}>

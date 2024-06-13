@@ -12,7 +12,7 @@
     flex-direction: column;
     min-height: 170px;
     height: max-content;
-    border: 1px solid rgba(255, 255, 255, 0.161);
+    box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.172);
     border-radius: 5px;
 }
 
@@ -20,7 +20,7 @@
     width: 70%;
     min-height: 1300px;
     height: max-content;
-    margin-top: 50px;
+    margin-top: 60px;
     border-radius: 10px;
 }
 
@@ -33,6 +33,12 @@
     margin-left: 40px;
     margin-top: 25px;
     text-decoration: none;
+    width: max-content;
+}
+
+.textoNome:hover{
+    color: rgb(114, 85, 171);
+    transition: color 0.3s ease;
 }
 
 .containerIcon{
@@ -52,6 +58,7 @@
     font-size: 20px;
     font-weight: 500;
     margin-left: 10px;
+    transition: color 0.3s ease;
 }
 
 .containerTituloDescricao{
