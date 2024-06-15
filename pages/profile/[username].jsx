@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import styles from '../../styles/profile.module.css';
 import { useRouter } from 'next/router';
@@ -10,6 +10,7 @@ import useCarregarImagens from '../../hooks/carregarImagens';
 import { FaHammer } from "react-icons/fa";
 
 import PerguntaPerfil from '../../components/PerguntaPerfil/PerguntaPerfil';
+import RespostaPerfil from '../../components/RespostaPerfil/RespostaPerfil';
 import Navbar from '../../components/Navbar/Navbar';
 
 export default function Profile() {
@@ -27,7 +28,10 @@ export default function Profile() {
     const [pontosProximoNivel, setPontosProximoNivel] = useState(0);
 
     const [comeco, setComeco] = useState(0);
+    const [comeco2, setComeco2] = useState(0);
     const [perguntas, setPerguntas] = useState([]);
+    const [respostas, setRespostas] = useState([]);
+    const [guiaAtivaNome, setGuiaAtivaNome] = useState('Perguntas');
 
     useEffect(() => {
         const verificarToken = async () => {
@@ -35,22 +39,23 @@ export default function Profile() {
             if (!token) return router.push('/login');
 
             const nomeusuario = window.location.pathname.split('/')[2];
-            await axios.post('http://localhost:8080/buscarDadosPerfil', {nomeusuario, comeco})
-            .then(response =>{
-                if (!response.data.dadosPerfil){
-                    setNomeUsuario('Usuário não encontrado!');
-                }else {
-                    setNomeUsuario(response.data.dadosPerfil.nomeusuario);
-                    setPontosProximoNivel(calcularPontos(response.data.dadosPerfil.nivelusuario));
-                    setPontosTotalUsuario(response.data.dadosPerfil.pontostotalusuario);
-                    setDataCadastro(new Date(response.data.dadosPerfil.datacadastrousuario).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }));
-                    setBiografiaUsuario(response.data.dadosPerfil.biografiausuario);
-                    setPerguntas(response.data.perguntasUsuario);
-                    setExtensaoFotoPerfilUsuario(response.data.dadosPerfil.extensaofotoperfilusuario);
-                    setExtensaoFotoCapaUsuario(response.data.dadosPerfil.extensaofotocapausuario);
-                    setIdUsuario(response.data.dadosPerfil.idusuario);
-                } 
-            });
+            await axios.post('http://localhost:8080/buscarDadosPerfil', { nomeusuario, comeco })
+                .then(response => {
+                    if (!response.data.dadosPerfil) {
+                        setNomeUsuario('Usuário não encontrado!');
+                    } else {
+                        setNomeUsuario(response.data.dadosPerfil.nomeusuario);
+                        setPontosProximoNivel(calcularPontos(response.data.dadosPerfil.nivelusuario));
+                        setPontosTotalUsuario(response.data.dadosPerfil.pontostotalusuario);
+                        setDataCadastro(new Date(response.data.dadosPerfil.datacadastrousuario).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }));
+                        setBiografiaUsuario(response.data.dadosPerfil.biografiausuario);
+                        setPerguntas(response.data.perguntasUsuario);
+                        setRespostas(response.data.respostasUsuario);
+                        setExtensaoFotoPerfilUsuario(response.data.dadosPerfil.extensaofotoperfilusuario);
+                        setExtensaoFotoCapaUsuario(response.data.dadosPerfil.extensaofotocapausuario);
+                        setIdUsuario(response.data.dadosPerfil.idusuario);
+                    }
+                });
         };
         verificarToken();
     }, []);
@@ -58,75 +63,92 @@ export default function Profile() {
     useEffect(() => {
         const carregarMaisPerguntas = async () => {
             console.log(comeco);
-            await axios.post('http://localhost:8080/buscarMaisPerguntas', {nomeUsuario, comeco})
-            .then(response =>{
-                setPerguntas(prevPerguntas => [...prevPerguntas, ...response.data]);
-            });
+            await axios.post('http://localhost:8080/buscarMaisPerguntas', { nomeUsuario, comeco })
+                .then(response => {
+                    setPerguntas(prevPerguntas => [...prevPerguntas, ...response.data]);
+                });
         };
         if (comeco != 0) carregarMaisPerguntas();
-    }, [comeco]); 
+    }, [comeco]);
+
+    useEffect(() => {
+        const carregarMaisRespostas = async () => {
+            console.log(comeco2);
+            await axios.post('http://localhost:8080/buscarMaisRespostas', { nomeUsuario, comeco2 })
+                .then(response => {
+                    setRespostas(prevRespostas => [...prevRespostas, ...response.data]);
+                });
+        };
+        if (comeco2 != 0) carregarMaisRespostas();
+    }, [comeco2]);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
-          entries => {if (entries[0].isIntersecting) setComeco(prevComeco => prevComeco + 15);}, { threshold: 1 });
+            entries => { if (entries[0].isIntersecting) setComeco(prevComeco => prevComeco + 15); }, { threshold: 1 });
         if (observerRef.current) observer.observe(observerRef.current);
-        return () => {if (observerRef.current)  observer.unobserve(observerRef.current)};
-      }, []);
-
-    const [guiaAtivaNome, setGuiaAtivaNome] = useState('Perguntas');
+        return () => { if (observerRef.current) observer.unobserve(observerRef.current) };
+    }, []);
 
     return (
         nomeUsuario != 'Usuário não encontrado!' ? (
-        <section className={styles.mainContainer}>
-            <Navbar />
-            <div className={styles.containerProfile}>
+            <section className={styles.mainContainer}>
+                <Navbar />
+                <div className={styles.containerProfile}>
 
-                <div className={styles.containerBanner} style={{ backgroundImage: `url(${fotoCapaCarregada})`}}>
-                    <div className={styles.containerIcon} style={{ backgroundImage: `url(${fotoPerfilCarregada})`}}></div>
-                </div>
-
-                <div className={styles.containerInformacoes}>
-                    <p className={styles.textoNome}>{nomeUsuario}</p>
-      
-
-                    <div className={styles.containerMedalha}>
-                        <FaHammer  className={styles.medalha} />
-                        <p>Desenvolvedor</p>
+                    <div className={styles.containerBanner} style={{ backgroundImage: `url(${fotoCapaCarregada})` }}>
+                        <div className={styles.containerIcon} style={{ backgroundImage: `url(${fotoPerfilCarregada})` }}></div>
                     </div>
 
-                </div>
+                    <div className={styles.containerInformacoes}>
+                        <p className={styles.textoNome}>{nomeUsuario}</p>
 
-                <div className={styles.containerInformacoes2}>
-                    <div className={styles.containerBarraExperiencia}>
-                        <div className={styles.barraExperiencia}></div>
+
+                        <div className={styles.containerMedalha}>
+                            <FaHammer className={styles.medalha} />
+                            <p>Desenvolvedor</p>
+                        </div>
 
                     </div>
-                    <p className={styles.textoExperiencia}>{pontosTotalUsuario}/{pontosProximoNivel} | 0%</p>
-                </div>
 
-                <div className={styles.containerBiografia}>
-                    <p className={styles.textoBiografia}>{biografiaUsuario}</p>
-                </div>
+                    <div className={styles.containerInformacoes2}>
+                        <div className={styles.containerBarraExperiencia}>
+                            <div className={styles.barraExperiencia}></div>
 
-                <div className={styles.containerBiografia}>
-                    <p className={styles.textoDataCadastro}>Membro desde {dataCadastro}</p>
-                </div>
+                        </div>
+                        <p className={styles.textoExperiencia}>{pontosTotalUsuario}/{pontosProximoNivel} | 0%</p>
+                    </div>
 
-                <div className={styles.containerGuias}>
-                    <div onClick={() => setGuiaAtivaNome('Perguntas')} className={guiaAtivaNome === 'Perguntas' ? styles.guiaSelecionada : styles.guiaPerguntas}>Perguntas</div>
-                    <div onClick={() => setGuiaAtivaNome('Respostas')} className={guiaAtivaNome === 'Respostas' ? styles.guiaSelecionada : styles.guiaPerguntas}>Respostas</div>
-                    <div onClick={() => setGuiaAtivaNome('Seguidores')} className={guiaAtivaNome === 'Seguidores' ? styles.guiaSelecionada : styles.guiaPerguntas}>Seguidores</div>
-                    <div onClick={() => setGuiaAtivaNome('Seguindo')} className={guiaAtivaNome === 'Seguindo' ? styles.guiaSelecionada : styles.guiaPerguntas}>Seguindo</div>
-                </div>
+                    <div className={styles.containerBiografia}>
+                        <p className={styles.textoBiografia}>{biografiaUsuario}</p>
+                    </div>
 
-                <div className={styles.containerAtividades}>
-                {perguntas.map(pergunta => (
-                    <PerguntaPerfil key={pergunta.idpergunta} tempopergunta={pergunta.tempopergunta} titulopergunta={pergunta.titulopergunta} numerorespostas={pergunta.numerorespostaspergunta} urlpergunta={pergunta.urlpergunta}/>
-                ))}
+                    <div className={styles.containerBiografia}>
+                        <p className={styles.textoDataCadastro}>Membro desde {dataCadastro}</p>
+                    </div>
+
+                    <div className={styles.containerGuias}>
+                        <div onClick={() => setGuiaAtivaNome('Perguntas')} className={guiaAtivaNome === 'Perguntas' ? styles.guiaSelecionada : styles.guiaPerguntas}>Perguntas</div>
+                        <div onClick={() => setGuiaAtivaNome('Respostas')} className={guiaAtivaNome === 'Respostas' ? styles.guiaSelecionada : styles.guiaPerguntas}>Respostas</div>
+                        <div onClick={() => setGuiaAtivaNome('Seguidores')} className={guiaAtivaNome === 'Seguidores' ? styles.guiaSelecionada : styles.guiaPerguntas}>Seguidores</div>
+                        <div onClick={() => setGuiaAtivaNome('Seguindo')} className={guiaAtivaNome === 'Seguindo' ? styles.guiaSelecionada : styles.guiaPerguntas}>Seguindo</div>
+                    </div>
+
+                    <div className={styles.containerAtividades}>
+                        {guiaAtivaNome === 'Perguntas' && (
+                            perguntas.map(pergunta => (
+                                <PerguntaPerfil key={pergunta.idpergunta} tempopergunta={pergunta.tempopergunta} titulopergunta={pergunta.titulopergunta} numerorespostas={pergunta.numerorespostaspergunta} urlpergunta={pergunta.urlpergunta} />
+                            ))
+                        )}
+
+                        {guiaAtivaNome === 'Respostas' && (
+                            respostas.map(resposta => (
+                                <RespostaPerfil key={resposta.idresposta} temporesposta={resposta.temporesposta} textoresposta={resposta.textoresposta} numerocomentarios={resposta.numerocomentariosresposta} urlpergunta={resposta.urlpergunta}/>
+                            ))
+                        )}
+                    </div>
+                    <div ref={observerRef}></div>
                 </div>
-                <div ref={observerRef}></div>
-            </div>
-        </section>
+            </section>
         ) : (<Error />)
     )
 }

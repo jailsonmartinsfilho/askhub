@@ -1,0 +1,33 @@
+.containerPerguntaPerfil{
+    margin-top: 20px;
+    width: 100%;
+    min-height: 130px;
+    background-color: #2D2840;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.172);
+    padding: 30px;
+}
+
+.textoPergunta{
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    text-decoration: none;
+}
+
+.textoPergunta:hover{
+    font-size: 20px;
+    color: #744775;;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.tempoResposta{
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    pointer-events: none;
+    opacity: 0.6;
+}

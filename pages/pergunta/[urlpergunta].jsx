@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import styles from '../../styles/pergunta.module.css';
 import { useRouter } from 'next/router';
@@ -8,13 +8,14 @@ import { FaHeart } from "react-icons/fa6";
 import { MdCategory } from "react-icons/md";
 import { MdAccessTimeFilled } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
-import { BiSolidCategory } from "react-icons/bi";
 import Link from 'next/link';
 import calcularTempo from '../../hooks/calcularTempo';
 import Navbar from '../../components/Navbar/Navbar';
+import RespostaPergunta from '../../components/RespostaPergunta/RespostaPergunta';
 
 export default function Pergunta() {
     const router = useRouter();
+    const observerRef = useRef();
 
     const [idUsuario, setIdUsuario] = useState('');
     const [extensaoFotoPerfilUsuario, setExtensaoFotoPerfilUsuario] = useState(undefined);
@@ -28,18 +29,34 @@ export default function Pergunta() {
     const [curtidasPergunta, setCurtidasPergunta] = useState('');
     const [numeroRespostasPergunta, setNumeroRespostasPergunta] = useState('');
     const [categoriaPergunta, setCategoriaPergunta] = useState('');
+    const [textoResposta, setTextoResposta] = useState('');
+    const [mensagemErro, setMensagemErro] = useState('');
+    const [token, setToken] = useState('');
+    const [usuarioJaRespondeu, setUsuarioJaRespondeu] = useState(false);
+
+    const [comeco, setComeco] = useState(0);
+    const [respostas, setRespostas] = useState([]);
+
+    const validarResposta = ({ textoResposta }) => {
+        if (textoResposta.length < 4) return setMensagemErro('A resposta é muito curta!');
+        setMensagemErro('')
+        return '';
+    };
+
+    useEffect(() => {
+        validarResposta({ textoResposta });
+    }, [textoResposta]);
 
     useEffect(() => {
         const verificarToken = async () => {
             const token = Cookies.get('askhub');
             if (!token) return router.push('/login');
+            setToken(token);
 
             const urlpergunta = window.location.pathname.split('/')[2];
-            console.log(urlpergunta);
 
             await axios.post('http://localhost:8080/buscarDadosPergunta', { urlpergunta })
                 .then(response => {
-                    console.log(response.data)
                     setIdUsuario(response.data.idusuariopergunta);
                     setNomeUsuario(response.data.nomeusuariopergunta);
                     setTempoPergunta(calcularTempo(response.data.tempopergunta));
@@ -51,10 +68,56 @@ export default function Pergunta() {
                     setCategoriaPergunta(response.data.categoriapergunta);
                     setExtensaoFotoPerfilUsuario(response.data.extensaofotoperfilusuario);
                     setExtensaoFotoCapaUsuario(response.data.extensaofotocapausuario);
-                    console.log(response.data)
                 });
         };
         verificarToken();
+    }, []);
+
+    useEffect(() => {
+        const idpergunta = window.location.pathname.match(/\/(\d+)/)?.[1] || null;
+
+        axios.post('http://localhost:8080/verificarUsuarioJaRespondeu', { idUsuario, idpergunta })
+            .then(response => {
+                if (response.data) setUsuarioJaRespondeu(true);
+            });
+    }, [idUsuario]);
+
+    let idpergunta2;
+    const carregarMaisRespostas = async () => {
+        idpergunta2 = window.location.pathname.match(/\/(\d+)/)?.[1] || null;
+        await axios.post('http://localhost:8080/buscarRespostasPergunta', { comeco, idpergunta2 })
+            .then(response => {
+                setRespostas(prevRespostas => [...prevRespostas, ...response.data]);
+            });
+    };
+
+    useEffect(() => {
+        carregarMaisRespostas();
+    }, [comeco]);
+
+    let idpergunta;
+    let urlpergunta2;
+    const postarResposta = async (event) => {
+        const errorMessage = validarResposta({ textoResposta });
+        if (errorMessage != '') return;
+
+        idpergunta = window.location.pathname.match(/\/(\d+)/)?.[1] || null;
+        urlpergunta2 = window.location.pathname.split('/')[2];
+
+        await axios.post('http://localhost:8080/postarResposta', { token, textoResposta, idpergunta, urlpergunta2 })
+            .then(response => {
+                setRespostas(prevRespostas => [response.data, ...prevRespostas]);
+                console.log(response.data)
+                setNumeroRespostasPergunta(response.data.idresposta)
+                setUsuarioJaRespondeu(true)
+            });
+    }
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            entries => { if (entries[0].isIntersecting) setComeco(prevComeco => prevComeco + 15); }, { threshold: 1 });
+        if (observerRef.current) observer.observe(observerRef.current);
+        return () => { if (observerRef.current) observer.unobserve(observerRef.current) };
     }, []);
 
     return (
@@ -84,7 +147,19 @@ export default function Pergunta() {
                 <div className={styles.containerNumeroRespostas}>
                     <div className={styles.textoNumeroRespostas}>{numeroRespostasPergunta}<div style={{ color: 'white', marginLeft: 5 }}>Respostas</div></div>
                 </div>
-                <div className={styles.containerInformacoes}></div>
+
+                <textarea value={textoResposta} onChange={(event) => { setTextoResposta(event.target.value) }} className={styles.textarea} style={usuarioJaRespondeu ? { display: 'none' } : {}} laceholder="Insira sua resposta aqui..." maxLength={2000} />
+
+                <div className={styles.containerBotoesResposta}>
+                    <button onClick={postarResposta} className={mensagemErro == '' ? styles.buttonCadastrar : styles.buttonCadastrarOff} style={usuarioJaRespondeu ? { display: 'none' } : {}}>Postar</button>
+                </div>
+
+                <div className={styles.containerInformacoes}>
+                    {respostas.map(resposta => (
+                        <RespostaPergunta key={resposta.idperguntaresposta} extensaofotoperfilusuario={resposta.extensaofotoperfilusuario} nomeusuarioresposta={resposta.nomeusuarioresposta} idusuarioresposta={resposta.idusuarioresposta} temporesposta={resposta.temporesposta} textoresposta={resposta.textoresposta} numerocomentariosresposta={resposta.numerocomentariosresposta} curtidasresposta={resposta.curtidasresposta} />
+                    ))}
+                </div>
+                <div ref={observerRef}></div>
 
             </div>
         </section>
