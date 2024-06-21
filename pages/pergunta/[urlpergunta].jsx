@@ -26,13 +26,14 @@ export default function Pergunta() {
     const [tituloPergunta, setTituloPergunta] = useState('');
     const [descricaoPergunta, setDescricaoPergunta] = useState('');
     const [visualizacoesPergunta, setVisualizacoesPergunta] = useState('');
-    const [curtidasPergunta, setCurtidasPergunta] = useState('');
+    const [curtidasPergunta, setCurtidasPergunta] = useState(0);
     const [numeroRespostasPergunta, setNumeroRespostasPergunta] = useState('');
     const [categoriaPergunta, setCategoriaPergunta] = useState('');
     const [textoResposta, setTextoResposta] = useState('');
     const [mensagemErro, setMensagemErro] = useState('');
     const [token, setToken] = useState('');
     const [usuarioJaRespondeu, setUsuarioJaRespondeu] = useState(false);
+    const [usuarioJaCurtiu, setUsuarioJaCurtiu] = useState(false);
 
     const [comeco, setComeco] = useState(0);
     const [respostas, setRespostas] = useState([]);
@@ -75,12 +76,19 @@ export default function Pergunta() {
 
     useEffect(() => {
         const idpergunta = window.location.pathname.match(/\/(\d+)/)?.[1] || null;
+        if (token == '') return;
 
-        axios.post('http://localhost:8080/verificarUsuarioJaRespondeu', { idUsuario, idpergunta })
+        axios.post('http://localhost:8080/verificarUsuarioJaRespondeu', { token, idpergunta })
             .then(response => {
                 if (response.data) setUsuarioJaRespondeu(true);
             });
-    }, [idUsuario]);
+
+        console.log(token)
+        axios.post('http://localhost:8080/verificarUsuarioJaCurtiuPergunta', { token, idpergunta, tipocurtida: 'pergunta' })
+            .then(response => {
+                if (response.data) setUsuarioJaCurtiu(true);
+            });
+    }, [token]);
 
     let idpergunta2;
     const carregarMaisRespostas = async () => {
@@ -120,6 +128,26 @@ export default function Pergunta() {
         return () => { if (observerRef.current) observer.unobserve(observerRef.current) };
     }, []);
 
+    const handleCurtirPergunta = async () => {
+        const idpergunta = window.location.pathname.match(/\/(\d+)/)?.[1] || null;
+
+        if (usuarioJaCurtiu) {
+            await axios.post('http://localhost:8080/curtidaPergunta', { token, idpergunta, tipocurtida: 'pergunta', operacao: 'remover' })
+            .then(response => {
+                console.log(response.data)
+                setCurtidasPergunta(response.data);
+                setUsuarioJaCurtiu(false)
+            });
+        } else {
+            await axios.post('http://localhost:8080/curtidaPergunta', { token, idpergunta, tipocurtida: 'pergunta', operacao: 'adicionar' })
+                .then(response => {
+                    console.log(response.data)
+                    setCurtidasPergunta(response.data);
+                    setUsuarioJaCurtiu(true)
+                });
+        }
+    }
+
     return (
         <section className={styles.mainContainer}>
             <Navbar />
@@ -137,8 +165,8 @@ export default function Pergunta() {
                     </div>
 
                     <div className={styles.containerCurtidasVisuaizacoesCategoriaTempo}>
+                        <div className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><FaHeart onClick={handleCurtirPergunta} style={{ cursor: 'pointer', fill: usuarioJaCurtiu ? 'red' : 'white' }} /> <div className={styles.subTexto}>{curtidasPergunta}</div></div>
                         <div className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><FaEye /> <div className={styles.subTexto}>{visualizacoesPergunta}</div></div>
-                        <div className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><FaHeart /> <div className={styles.subTexto}>{curtidasPergunta}</div></div>
                         <div className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><MdCategory /> <div className={styles.subTexto}>{categoriaPergunta}</div></div>
                         <div className={styles.textoCurtidasVisuaizacoesCategoriaTempo}><MdAccessTimeFilled /> <div className={styles.subTexto}>{tempoPergunta}</div></div>
                     </div>
@@ -148,7 +176,7 @@ export default function Pergunta() {
                     <div className={styles.textoNumeroRespostas}>{numeroRespostasPergunta}<div style={{ color: 'white', marginLeft: 5 }}>Respostas</div></div>
                 </div>
 
-                <textarea value={textoResposta} onChange={(event) => { setTextoResposta(event.target.value) }} className={styles.textarea} style={usuarioJaRespondeu ? { display: 'none' } : {}} laceholder="Insira sua resposta aqui..." maxLength={2000} />
+                <textarea value={textoResposta} onChange={(event) => { setTextoResposta(event.target.value) }} className={styles.textarea} style={usuarioJaRespondeu ? { display: 'none' } : {}} placeholder="Insira sua resposta aqui..." maxLength={2000} />
 
                 <div className={styles.containerBotoesResposta}>
                     <button onClick={postarResposta} className={mensagemErro == '' ? styles.buttonCadastrar : styles.buttonCadastrarOff} style={usuarioJaRespondeu ? { display: 'none' } : {}}>Postar</button>
@@ -156,7 +184,7 @@ export default function Pergunta() {
 
                 <div className={styles.containerInformacoes}>
                     {respostas.map(resposta => (
-                        <RespostaPergunta key={resposta.idperguntaresposta} extensaofotoperfilusuario={resposta.extensaofotoperfilusuario} nomeusuarioresposta={resposta.nomeusuarioresposta} idusuarioresposta={resposta.idusuarioresposta} temporesposta={resposta.temporesposta} textoresposta={resposta.textoresposta} numerocomentariosresposta={resposta.numerocomentariosresposta} curtidasresposta={resposta.curtidasresposta} />
+                        <RespostaPergunta key={resposta.idperguntaresposta} idperguntaresposta={resposta.idperguntaresposta} token={token} idresposta={resposta.idresposta} extensaofotoperfilusuario={resposta.extensaofotoperfilusuario} nomeusuarioresposta={resposta.nomeusuarioresposta} idusuarioresposta={resposta.idusuarioresposta} temporesposta={resposta.temporesposta} textoresposta={resposta.textoresposta} numerocomentariosresposta={resposta.numerocomentariosresposta} curtidasresposta={resposta.curtidasresposta} />
                     ))}
                 </div>
                 <div ref={observerRef}></div>

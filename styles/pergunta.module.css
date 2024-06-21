@@ -211,6 +211,10 @@
 }
 
 .containerBotoesResposta{
+    width: 100%;
+}
 
+.textoCarregarMais{
+    color: white;
 }
 

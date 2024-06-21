@@ -14,7 +14,7 @@ export default function Navbar({ }) {
             <div className={styles.containerNavbar}>
             <Link  href={`/`}><FaHome /></Link>
             <Link  href={`/ask`}><FaPen /></Link>
-            <Link  href={`/`}><FaTrophy /></Link>
+            <Link  href={`/ranking`}><FaTrophy /></Link>
             <Link  href={`/configuracoes`}><FaGear /></Link>
             </div>
         </header>

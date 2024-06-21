@@ -7,7 +7,6 @@
     padding-left: 35px;
     padding-right: 35px;
     padding-top: 15px;
-    padding-bottom: 30px;
     border-radius: 10px;
     box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.172);
 }
@@ -54,6 +53,7 @@
     width: 100%;
     align-items: center;
     text-align: center;
+    margin-bottom: 15px;
     justify-content: space-between;
     padding-top: 20px;
     opacity: 0.7;
@@ -171,21 +171,4 @@
     padding-top: 20px;
     pointer-events: none;
     opacity: 0.6;
-}
-
-.containerCarregarMais{
-    display: flex;
-    justify-content: center;
-    padding-top: 20px;
-}
-
-.textoCarregarMais{
-    color: #47ABFF;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 17px;
-}
-
-.textoCarregarMais:hover{
-    color: #77b0df;
 }
