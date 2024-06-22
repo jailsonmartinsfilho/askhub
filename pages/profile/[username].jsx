@@ -8,6 +8,8 @@ import calcularPontos from '../../hooks/calcularPontos';
 import Error from '../../components/error/error';
 import useCarregarImagens from '../../hooks/carregarImagens';
 import { FaHammer } from "react-icons/fa";
+import { SlUserFollow } from "react-icons/sl";
+import { SlUserFollowing } from "react-icons/sl";
 
 import PerguntaPerfil from '../../components/PerguntaPerfil/PerguntaPerfil';
 import RespostaPerfil from '../../components/RespostaPerfil/RespostaPerfil';
@@ -32,6 +34,11 @@ export default function Profile() {
     const [perguntas, setPerguntas] = useState([]);
     const [respostas, setRespostas] = useState([]);
     const [guiaAtivaNome, setGuiaAtivaNome] = useState('Perguntas');
+    const [usuarioJaSegue, setUsuarioJaSegue] = useState(false);
+    const [donoDoPerfil, setDonoDoPerfil] = useState(false);
+    const [nomeUsuario2, setNomeUsuario2] = useState(false);
+
+    const [token, setToken] = useState('');
 
     useEffect(() => {
         const verificarToken = async () => {
@@ -39,11 +46,12 @@ export default function Profile() {
             if (!token) return router.push('/login');
 
             const nomeusuario = window.location.pathname.split('/')[2];
-            await axios.post('http://localhost:8080/buscarDadosPerfil', { nomeusuario, comeco })
+            await axios.post('http://localhost:8080/buscarDadosPerfil', { nomeusuario, comeco, token })
                 .then(response => {
                     if (!response.data.dadosPerfil) {
                         setNomeUsuario('Usuário não encontrado!');
                     } else {
+                        setToken(token)
                         setNomeUsuario(response.data.dadosPerfil.nomeusuario);
                         setPontosProximoNivel(calcularPontos(response.data.dadosPerfil.nivelusuario));
                         setPontosTotalUsuario(response.data.dadosPerfil.pontostotalusuario);
@@ -54,6 +62,7 @@ export default function Profile() {
                         setExtensaoFotoPerfilUsuario(response.data.dadosPerfil.extensaofotoperfilusuario);
                         setExtensaoFotoCapaUsuario(response.data.dadosPerfil.extensaofotocapausuario);
                         setIdUsuario(response.data.dadosPerfil.idusuario);
+                        setNomeUsuario2(response.data.nomeUsuario);
                     }
                 });
         };
@@ -72,8 +81,15 @@ export default function Profile() {
     }, [comeco]);
 
     useEffect(() => {
+        const verificarDonoPerfil = async () => {
+            const nomeusuariourl = window.location.pathname.split('/')[2];
+            if (nomeusuariourl == nomeUsuario2) setDonoDoPerfil(true);
+        };
+        if (nomeUsuario2 != '') verificarDonoPerfil();
+    }, [nomeUsuario2]);
+
+    useEffect(() => {
         const carregarMaisRespostas = async () => {
-            console.log(comeco2);
             await axios.post('http://localhost:8080/buscarMaisRespostas', { nomeUsuario, comeco2 })
                 .then(response => {
                     setRespostas(prevRespostas => [...prevRespostas, ...response.data]);
@@ -88,6 +104,21 @@ export default function Profile() {
         if (observerRef.current) observer.observe(observerRef.current);
         return () => { if (observerRef.current) observer.unobserve(observerRef.current) };
     }, []);
+
+    useEffect(() => {
+        const verficarUsuarioJaSegue = async () => {
+            await axios.post('http://localhost:8080/verificarUsuarioJaSegue', { token, nomeUsuario })
+                .then(response => { response.data ? setUsuarioJaSegue(true) : setUsuarioJaSegue(false) })
+        };
+        if (nomeUsuario != '') verficarUsuarioJaSegue();
+    }, [nomeUsuario]);
+
+    const handleSeguir = async () => {
+        await axios.post('http://localhost:8080/adicionarSeguida', { token, nomeUsuario })
+            .then(response => {
+                setUsuarioJaSegue(true);
+            });
+    };
 
     return (
         nomeUsuario != 'Usuário não encontrado!' ? (
@@ -108,8 +139,24 @@ export default function Profile() {
                             <p>Desenvolvedor</p>
                         </div>
 
-                    </div>
+                        {donoDoPerfil ? (
+                            null
+                        ) : <div className={styles.containerMedalha} onClick={handleSeguir}style={{ pointerEvents: usuarioJaSegue ? 'none' : 'auto' }}>
+                                {usuarioJaSegue ? (
 
+                                    <>
+                                        <SlUserFollowing className={styles.medalha} />
+                                        <p>Seguindo</p>
+                                    </>
+                                ) :
+                                    <>
+                                        <SlUserFollow className={styles.medalha} />
+                                        <p>Seguir</p>
+                                    </>
+                                }
+                            </div>
+                        }
+                    </div>
                     <div className={styles.containerInformacoes2}>
                         <div className={styles.containerBarraExperiencia}>
                             <div className={styles.barraExperiencia}></div>
@@ -142,7 +189,7 @@ export default function Profile() {
 
                         {guiaAtivaNome === 'Respostas' && (
                             respostas.map(resposta => (
-                                <RespostaPerfil key={resposta.idresposta} temporesposta={resposta.temporesposta} textoresposta={resposta.textoresposta} numerocomentarios={resposta.numerocomentariosresposta} urlpergunta={resposta.urlpergunta}/>
+                                <RespostaPerfil key={resposta.idresposta} temporesposta={resposta.temporesposta} textoresposta={resposta.textoresposta} numerocomentarios={resposta.numerocomentariosresposta} urlpergunta={resposta.urlpergunta} />
                             ))
                         )}
                     </div>
