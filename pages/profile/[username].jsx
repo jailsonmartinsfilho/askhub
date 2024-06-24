@@ -13,6 +13,7 @@ import { SlUserFollowing } from "react-icons/sl";
 
 import PerguntaPerfil from '../../components/PerguntaPerfil/PerguntaPerfil';
 import RespostaPerfil from '../../components/RespostaPerfil/RespostaPerfil';
+import SeguidorPerfil from '../../components/SeguidorPerfil/SeguidorPerfil';
 import Navbar from '../../components/Navbar/Navbar';
 
 export default function Profile() {
@@ -31,8 +32,13 @@ export default function Profile() {
 
     const [comeco, setComeco] = useState(0);
     const [comeco2, setComeco2] = useState(0);
+    const [comeco3, setComeco3] = useState(0);
+    const [comeco4, setComeco4] = useState(0);
+
     const [perguntas, setPerguntas] = useState([]);
     const [respostas, setRespostas] = useState([]);
+    const [seguidores, setSeguidores] = useState([]);
+    const [seguindo, setSeguindo] = useState([]);
     const [guiaAtivaNome, setGuiaAtivaNome] = useState('Perguntas');
     const [usuarioJaSegue, setUsuarioJaSegue] = useState(false);
     const [donoDoPerfil, setDonoDoPerfil] = useState(false);
@@ -59,6 +65,8 @@ export default function Profile() {
                         setBiografiaUsuario(response.data.dadosPerfil.biografiausuario);
                         setPerguntas(response.data.perguntasUsuario);
                         setRespostas(response.data.respostasUsuario);
+                        setSeguidores(response.data.seguidoresUsuario);
+                        setSeguindo(response.data.seguindosUsuario);
                         setExtensaoFotoPerfilUsuario(response.data.dadosPerfil.extensaofotoperfilusuario);
                         setExtensaoFotoCapaUsuario(response.data.dadosPerfil.extensaofotocapausuario);
                         setIdUsuario(response.data.dadosPerfil.idusuario);
@@ -70,8 +78,19 @@ export default function Profile() {
     }, []);
 
     useEffect(() => {
+        const verificarDonoPerfil = async () => {
+            console.log(seguidores)
+            const nomeusuariourl = window.location.pathname.split('/')[2];
+            if (nomeusuariourl == nomeUsuario2) setDonoDoPerfil(true);
+        };
+        if (nomeUsuario2 != '') verificarDonoPerfil();
+    }, [nomeUsuario2]);
+
+    useEffect(() => {
         const carregarMaisPerguntas = async () => {
-            console.log(comeco);
+            setComeco2(0);
+            setComeco3(0);
+            setComeco4(0);
             await axios.post('http://localhost:8080/buscarMaisPerguntas', { nomeUsuario, comeco })
                 .then(response => {
                     setPerguntas(prevPerguntas => [...prevPerguntas, ...response.data]);
@@ -81,17 +100,14 @@ export default function Profile() {
     }, [comeco]);
 
     useEffect(() => {
-        const verificarDonoPerfil = async () => {
-            const nomeusuariourl = window.location.pathname.split('/')[2];
-            if (nomeusuariourl == nomeUsuario2) setDonoDoPerfil(true);
-        };
-        if (nomeUsuario2 != '') verificarDonoPerfil();
-    }, [nomeUsuario2]);
-
-    useEffect(() => {
         const carregarMaisRespostas = async () => {
+            setComeco(0);
+            setComeco3(0);
+            setComeco4(0);
+            console.log('comeco2' + comeco2)
             await axios.post('http://localhost:8080/buscarMaisRespostas', { nomeUsuario, comeco2 })
                 .then(response => {
+                    console.log(response.data)
                     setRespostas(prevRespostas => [...prevRespostas, ...response.data]);
                 });
         };
@@ -99,11 +115,52 @@ export default function Profile() {
     }, [comeco2]);
 
     useEffect(() => {
+        const carregarMaisSeguidores = async () => {
+            setComeco(0);
+            setComeco2(0);
+            setComeco4(0);
+            await axios.post('http://localhost:8080/carregarMaisSeguidores', { nomeUsuario, comeco3 })
+                .then(response => {
+                    setRespostas(prevRespostas => [...prevRespostas, ...response.data]);
+                });
+        };
+        if (comeco3 != 0) carregarMaisSeguidores();
+    }, [comeco3]);
+
+    useEffect(() => {
+        const carregarMaisSeguindo = async () => {
+            setComeco(0);
+            setComeco2(0);
+            setComeco3(0);
+            await axios.post('http://localhost:8080/carregarMaisSeguindo', { nomeUsuario, comeco4 })
+                .then(response => {
+                    setRespostas(prevRespostas => [...prevRespostas, ...response.data]);
+                });
+        };
+        if (comeco4 != 0) carregarMaisSeguindo();
+    }, [comeco4]);
+
+    useEffect(() => {
         const observer = new IntersectionObserver(
-            entries => { if (entries[0].isIntersecting) setComeco(prevComeco => prevComeco + 15); }, { threshold: 1 });
+            entries => {
+                console.log(guiaAtivaNome)
+                if (entries[0].isIntersecting && guiaAtivaNome == 'Perguntas') {
+                    setComeco(prevComeco => prevComeco + 15);
+                    console.log(usuarioJaSegue)
+                }
+                if (entries[0].isIntersecting && guiaAtivaNome == 'Respostas') {
+                    setComeco2(prevComeco2 => prevComeco2 + 15);
+                }
+                if (entries[0].isIntersecting && guiaAtivaNome == 'Seguidores') {
+                    setComeco3(prevComeco3 => prevComeco3 + 15);
+                }
+                if (entries[0].isIntersecting && guiaAtivaNome == 'Seguindo') {
+                    setComeco3(prevComeco4 => prevComeco4 + 15);
+                }
+            }, { threshold: 1 });
         if (observerRef.current) observer.observe(observerRef.current);
         return () => { if (observerRef.current) observer.unobserve(observerRef.current) };
-    }, []);
+    }, [guiaAtivaNome]);
 
     useEffect(() => {
         const verficarUsuarioJaSegue = async () => {
@@ -114,10 +171,17 @@ export default function Profile() {
     }, [nomeUsuario]);
 
     const handleSeguir = async () => {
-        await axios.post('http://localhost:8080/adicionarSeguida', { token, nomeUsuario })
+        if (usuarioJaSegue){
+            await axios.post('http://localhost:8080/removerSeguida', { token, nomeUsuario })
+            .then(response => {
+                setUsuarioJaSegue(false);
+            });
+        }else{
+            await axios.post('http://localhost:8080/adicionarSeguida', { token, nomeUsuario })
             .then(response => {
                 setUsuarioJaSegue(true);
             });
+        }
     };
 
     return (
@@ -141,20 +205,19 @@ export default function Profile() {
 
                         {donoDoPerfil ? (
                             null
-                        ) : <div className={styles.containerMedalha} onClick={handleSeguir}style={{ pointerEvents: usuarioJaSegue ? 'none' : 'auto' }}>
-                                {usuarioJaSegue ? (
-
-                                    <>
-                                        <SlUserFollowing className={styles.medalha} />
-                                        <p>Seguindo</p>
-                                    </>
-                                ) :
-                                    <>
-                                        <SlUserFollow className={styles.medalha} />
-                                        <p>Seguir</p>
-                                    </>
-                                }
-                            </div>
+                        ) : <div className={styles.containerMedalha} onClick={handleSeguir}>
+                            {usuarioJaSegue ? (
+                                <>
+                                    <SlUserFollowing className={styles.medalha} />
+                                    <p>Seguindo</p>
+                                </>
+                            ) :
+                                <>
+                                    <SlUserFollow className={styles.medalha} />
+                                    <p>Seguir</p>
+                                </>
+                            }
+                        </div>
                         }
                     </div>
                     <div className={styles.containerInformacoes2}>
@@ -190,6 +253,17 @@ export default function Profile() {
                         {guiaAtivaNome === 'Respostas' && (
                             respostas.map(resposta => (
                                 <RespostaPerfil key={resposta.idresposta} temporesposta={resposta.temporesposta} textoresposta={resposta.textoresposta} numerocomentarios={resposta.numerocomentariosresposta} urlpergunta={resposta.urlpergunta} />
+                            ))
+                        )}
+
+                        {guiaAtivaNome === 'Seguidores' && seguidores && (
+                            seguidores.map(seguidor => (
+                                <SeguidorPerfil key={seguidor.idusuarioseguidor} idusuario={seguidor.idusuario} nomeusuario={seguidor.nomeusuario} extensaofotoperfilusuario={seguidor.extensaofotoperfilusuario} />
+                            ))
+                        )}
+                        {guiaAtivaNome === 'Seguindo' && seguindo && (
+                            seguindo.map(seguinddor => (
+                                <SeguidorPerfil key={seguinddor.idusuarioseguidor} idusuario={seguinddor.idusuario} nomeusuario={seguinddor.nomeusuario} extensaofotoperfilusuario={seguinddor.extensaofotoperfilusuario} />
                             ))
                         )}
                     </div>

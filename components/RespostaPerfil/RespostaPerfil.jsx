@@ -2,7 +2,6 @@ import styles from './RespostaPerfil.module.css';
 import calcularTempo from '../../hooks/calcularTempo';
 import Link from 'next/link';
 
-
 export default function RespostaPerfil({ temporesposta, textoresposta, numerocomentarios, urlpergunta }) {
     let tempoResposta = calcularTempo(temporesposta);
     
