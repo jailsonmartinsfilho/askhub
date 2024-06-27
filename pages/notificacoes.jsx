@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Cookies from 'js-cookie';
+import axios from 'axios';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Notificacao from '../components/Notificacao/Notificacao';
 import Navbar from '../components/Navbar/Navbar';
 
 import styles from '../styles/index.module.css';
-import axios from 'axios';
+
 
 export default function Notificacoes() {
     const router = useRouter();
@@ -14,24 +15,28 @@ export default function Notificacoes() {
 
     const [comeco, setComeco] = useState(0);
     const [notificacoes, setNotificacoes] = useState([]);
+    const [token, setToken] = useState(''); 
+    const [podeBuscar, setPodeBuscar] = useState(false); 
 
     useEffect(() => {
         const verificarToken = async () => {
             const token = Cookies.get('askhub');
             if (!token) return router.push('/login');
+            setToken(token)
         };
         verificarToken();
     }, []);
 
     useEffect(() => {
         const buscarNotificacoes = async () => {
-            await axios.post('http://localhost:8080/buscarNotificacoes', {comeco})
+            await axios.post('http://localhost:8080/buscarNotificacoes', {token, comeco})
             .then(response =>{
                 setNotificacoes(prevNotificacoes => [...prevNotificacoes, ...response.data]);
+                setPodeBuscar(true)
             });
         };
-        buscarNotificacoes();
-    }, [comeco]); 
+        if (token != '') buscarNotificacoes();
+    }, [token]); 
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -52,7 +57,7 @@ export default function Notificacoes() {
             <section className={styles.mainContainer}>
                 <div className={styles.containerPergunta}>
                 {notificacoes.map(notificacao => (
-                    <Notificacao key={notificacao.idnotificacao} extensaofotoperfilusuario={notificacao.extensaofotoperfilusuario} nomeusuarionotificacao={notificacao.nomeusuarionotificacao} idusuarionotificacao={notificacao.idusuarionotificacao} temponotificacao={notificacao.temponotificacao} titulonotificacao={notificacao.titulonotificacao} descricaonotificacao={notificacao.descricaonotificacao} visualizacoespergunta={pergunta.visualizacoespergunta} numerorespostaspergunta={pergunta.numerorespostaspergunta} categoriapergunta={pergunta.categoriapergunta} curtidaspergunta={pergunta.curtidaspergunta} urlpergunta={pergunta.urlpergunta}/>
+                    <Notificacao key={notificacao.idusuarionotificacao} podeBuscar={podeBuscar} extensaofotoperfilusuario={notificacao.extensaofotoperfilusuario} idusuarionotificado={notificacao.idusuarionotificado} nomeusuarionotificacao={notificacao.nomeusuarionotificacao} idusuarionotificacao={notificacao.idusuarionotificacao} temponotificacao={notificacao.temponotificacao} tiponotificacao={notificacao.tiponotificacao} urlpergunta={notificacao.urlpergunta}/>
                 ))}
                 <div ref={observerRef}></div>
                 </div>

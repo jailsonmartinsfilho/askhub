@@ -112,7 +112,7 @@ export default function Pergunta() {
         idpergunta = window.location.pathname.match(/\/(\d+)/)?.[1] || null;
         urlpergunta2 = window.location.pathname.split('/')[2];
 
-        await axios.post('http://localhost:8080/postarResposta', { token, textoResposta, idpergunta, urlpergunta2 })
+        await axios.post('http://localhost:8080/postarResposta', { token, textoresposta: textoResposta, idpergunta, urlpergunta: urlpergunta2 })
             .then(response => {
                 setRespostas(prevRespostas => [response.data, ...prevRespostas]);
                 console.log(response.data)

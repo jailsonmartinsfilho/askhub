@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import styles from '../../styles/profile.module.css';
-import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
-import calcularTempo from '../../hooks/calcularTempo';
+import { useRouter } from 'next/router';
+
 import calcularPontos from '../../hooks/calcularPontos';
-import Error from '../../components/error/error';
 import useCarregarImagens from '../../hooks/carregarImagens';
 import { FaHammer } from "react-icons/fa";
 import { SlUserFollow } from "react-icons/sl";
@@ -14,7 +12,9 @@ import { SlUserFollowing } from "react-icons/sl";
 import PerguntaPerfil from '../../components/PerguntaPerfil/PerguntaPerfil';
 import RespostaPerfil from '../../components/RespostaPerfil/RespostaPerfil';
 import SeguidorPerfil from '../../components/SeguidorPerfil/SeguidorPerfil';
+import Error from '../../components/error/error';
 import Navbar from '../../components/Navbar/Navbar';
+import styles from '../../styles/profile.module.css';
 
 export default function Profile() {
     const router = useRouter();
@@ -222,10 +222,10 @@ export default function Profile() {
                     </div>
                     <div className={styles.containerInformacoes2}>
                         <div className={styles.containerBarraExperiencia}>
-                            <div className={styles.barraExperiencia}></div>
+                            <div className={styles.barraExperiencia} style={{width: `${(pontosTotalUsuario / pontosProximoNivel) * 100}%`}}></div>
 
                         </div>
-                        <p className={styles.textoExperiencia}>{pontosTotalUsuario}/{pontosProximoNivel} | 0%</p>
+                        <p className={styles.textoExperiencia}>{pontosTotalUsuario}/{pontosProximoNivel} | {(pontosTotalUsuario / pontosProximoNivel) * 100}%</p>
                     </div>
 
                     <div className={styles.containerBiografia}>

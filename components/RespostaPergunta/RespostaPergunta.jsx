@@ -57,8 +57,9 @@ export default function RespostaPergunta({ token, idperguntaresposta, idresposta
     const postarComentario = async (event) => {
         const errorMessage = validarComentario({ textoComentario });
         if (errorMessage != '') return;
+        const urlpergunta = window.location.pathname.split('/')[2];
 
-        await axios.post('http://localhost:8080/postarComentario', { token, textoComentario, idperguntaresposta, idresposta })
+        await axios.post('http://localhost:8080/postarComentario', { token, textocomentario: textoComentario, idperguntaresposta, idresposta, urlpergunta })
             .then(response => {
                 setNumeroComentariosRespostas(response.data.idcomentario)
                 setComentarios(prevComentarios => [response.data, ...prevComentarios]);
