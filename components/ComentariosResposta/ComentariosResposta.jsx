@@ -24,14 +24,12 @@ export default function ComentariosResposta({ tempocomentario, textocomentario, 
         if (usuarioJaCurtiuComentario) {
             await axios.post('http://localhost:8080/curtidaComentario', { token, idcomentario: idperguntarespostacomentario, tipocurtida: 'comentario', operacao: 'remover' })
             .then(response => {
-                console.log(response.data)
                 setCurtidasComentario(response.data);
                 setUsuarioJaCurtiuComentario(false)
             });
         } else {
             await axios.post('http://localhost:8080/curtidaComentario', { token, idcomentario: idperguntarespostacomentario, tipocurtida: 'comentario', operacao: 'adicionar' })
                 .then(response => {
-                    console.log(response.data)
                     setCurtidasComentario(response.data);
                     setUsuarioJaCurtiuComentario(true)
                 });

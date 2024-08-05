@@ -13,7 +13,6 @@ export default function GoogleCustomButtonCadastrar({ botaoEmailClicado }) {
             axios.post('http://localhost:8080/googleCadastrar', { tokenResponse })
             .then(response => {
                 if (response.data == 'O endereço de e-mail dessa conta do Google já está vinculado a uma conta, faça log-in usando o modo de e-mail e senha padrão!') {
-                    console.log(response.data);
                     return;
                 }else{
                     Cookies.set('askhub', response.data.token, { expires: 3650, secure: false });

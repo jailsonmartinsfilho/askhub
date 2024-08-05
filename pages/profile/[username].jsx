@@ -79,7 +79,6 @@ export default function Profile() {
 
     useEffect(() => {
         const verificarDonoPerfil = async () => {
-            console.log(seguidores)
             const nomeusuariourl = window.location.pathname.split('/')[2];
             if (nomeusuariourl == nomeUsuario2) setDonoDoPerfil(true);
         };
@@ -104,10 +103,8 @@ export default function Profile() {
             setComeco(0);
             setComeco3(0);
             setComeco4(0);
-            console.log('comeco2' + comeco2)
             await axios.post('http://localhost:8080/buscarMaisRespostas', { nomeUsuario, comeco2 })
                 .then(response => {
-                    console.log(response.data)
                     setRespostas(prevRespostas => [...prevRespostas, ...response.data]);
                 });
         };
@@ -143,10 +140,8 @@ export default function Profile() {
     useEffect(() => {
         const observer = new IntersectionObserver(
             entries => {
-                console.log(guiaAtivaNome)
                 if (entries[0].isIntersecting && guiaAtivaNome == 'Perguntas') {
                     setComeco(prevComeco => prevComeco + 15);
-                    console.log(usuarioJaSegue)
                 }
                 if (entries[0].isIntersecting && guiaAtivaNome == 'Respostas') {
                     setComeco2(prevComeco2 => prevComeco2 + 15);

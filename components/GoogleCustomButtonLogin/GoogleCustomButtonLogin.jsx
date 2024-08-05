@@ -13,7 +13,6 @@ export default function GoogleCustomButtonLogin({ botaoEmailClicado }) {
             axios.post('http://localhost:8080/googleLogar', { tokenResponse })
             .then(response => {
                 if (response.data == 'Nenhuma conta do AskHub está associada a essa conta do Google!') {
-                    console.log(response.data);
                     return;
                 }else{
                     Cookies.set('askhub', response.data.token, { expires: 3650, secure: false });

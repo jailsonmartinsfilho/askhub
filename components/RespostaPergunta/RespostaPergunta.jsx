@@ -68,7 +68,6 @@ export default function RespostaPergunta({ token, idperguntaresposta, idresposta
     }
 
     const carregarComentarios = async () => {
-        console.log()
         await axios.post('http://localhost:8080/buscarComentariosResposta', { comeco, idperguntaresposta })
             .then(response => {
                 setComentarios(prevComentarios => [...prevComentarios, ...response.data]);
@@ -88,14 +87,12 @@ export default function RespostaPergunta({ token, idperguntaresposta, idresposta
         if (usuarioJaCurtiuResposta) {
             await axios.post('http://localhost:8080/curtidaResposta', { token, idresposta: idperguntaresposta, tipocurtida: 'resposta', operacao: 'remover' })
             .then(response => {
-                console.log(response.data)
                 setCurtidasResposta(response.data);
                 setUsuarioJaCurtiuResposta(false)
             });
         } else {
             await axios.post('http://localhost:8080/curtidaResposta', { token, idresposta: idperguntaresposta, tipocurtida: 'resposta', operacao: 'adicionar' })
                 .then(response => {
-                    console.log(response.data)
                     setCurtidasResposta(response.data);
                     setUsuarioJaCurtiuResposta(true)
                 });

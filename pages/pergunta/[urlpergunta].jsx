@@ -83,7 +83,6 @@ export default function Pergunta() {
                 if (response.data) setUsuarioJaRespondeu(true);
             });
 
-        console.log(token)
         axios.post('http://localhost:8080/verificarUsuarioJaCurtiuPergunta', { token, idpergunta, tipocurtida: 'pergunta' })
             .then(response => {
                 if (response.data) setUsuarioJaCurtiu(true);
@@ -115,7 +114,6 @@ export default function Pergunta() {
         await axios.post('http://localhost:8080/postarResposta', { token, textoresposta: textoResposta, idpergunta, urlpergunta: urlpergunta2 })
             .then(response => {
                 setRespostas(prevRespostas => [response.data, ...prevRespostas]);
-                console.log(response.data)
                 setNumeroRespostasPergunta(response.data.idresposta)
                 setUsuarioJaRespondeu(true)
             });
@@ -134,14 +132,12 @@ export default function Pergunta() {
         if (usuarioJaCurtiu) {
             await axios.post('http://localhost:8080/curtidaPergunta', { token, idpergunta, tipocurtida: 'pergunta', operacao: 'remover' })
             .then(response => {
-                console.log(response.data)
                 setCurtidasPergunta(response.data);
                 setUsuarioJaCurtiu(false)
             });
         } else {
             await axios.post('http://localhost:8080/curtidaPergunta', { token, idpergunta, tipocurtida: 'pergunta', operacao: 'adicionar' })
                 .then(response => {
-                    console.log(response.data)
                     setCurtidasPergunta(response.data);
                     setUsuarioJaCurtiu(true)
                 });
